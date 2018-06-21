@@ -1,0 +1,29 @@
+{
+  "name": "usersBE",
+  "version": "0.0.1",
+  "description": "Awesome project developed with TypeORM.",
+  "devDependencies": {
+    "@types/faker": "^4.x.x",
+    "@types/lodash": "^4.x.x",
+    "@types/node": "^8.x.x",
+    "dotenv": "^6.x.x",
+    "faker": "^4.x.x",
+    "nodemon": "^1.x.x",
+    "ts-node": "6.x.x",
+    "tslint": "^5.x.x",
+    "tslint-config-prettier": "^1.x.x",
+    "typescript": "2.x.x"
+  },
+  "dependencies": {
+    "graphql-yoga": "^1.x.x",
+    "lodash": "^4.x.x",
+    "merge-graphql-schemas": "^1.x.x",
+    "path": "^0.x.x",
+    "pg": "^7.x.x",
+    "reflect-metadata": "^0.x.x",
+    "typeorm": "0.x.x"
+  },
+  "scripts": {
+    "start": "nodemon --exec ts-node src/index.ts"
+  }
+}
