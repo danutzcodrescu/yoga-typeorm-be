@@ -9,6 +9,6 @@ export interface User {
   username?: string | null;
   email?: string | null;
   password?: string | null;
-  created?: string | null;
-  lastUpdate?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
 }
