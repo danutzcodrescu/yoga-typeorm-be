@@ -1,5 +1,7 @@
 import * as faker from "faker";
-export default {
+import { IResolvers } from "graphql-tools";
+
+const userResolver: IResolvers = {
   Query: {
     users: () => ({
       id: "1",
@@ -10,3 +12,4 @@ export default {
     })
   }
 };
+export default userResolver;

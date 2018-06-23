@@ -1,5 +1,5 @@
 {
-  "name": "usersBE",
+  "name": "users-typeorm-be",
   "version": "0.0.1",
   "description": "Awesome project developed with TypeORM.",
   "devDependencies": {
@@ -8,6 +8,9 @@
     "@types/node": "^8.x.x",
     "dotenv": "^6.x.x",
     "faker": "^4.x.x",
+    "graphql": "^0.x.x",
+    "graphql-code-generator": "^0.x.x",
+    "graphql-codegen-typescript-template": "^0.x.x",
     "nodemon": "^1.x.x",
     "ts-node": "6.x.x",
     "tslint": "^5.x.x",
@@ -15,6 +18,7 @@
     "typescript": "2.x.x"
   },
   "dependencies": {
+    "argon2": "^0.x.x",
     "graphql-yoga": "^1.x.x",
     "lodash": "^4.x.x",
     "merge-graphql-schemas": "^1.x.x",
@@ -24,6 +28,7 @@
     "typeorm": "0.x.x"
   },
   "scripts": {
-    "start": "nodemon --exec ts-node src/index.ts"
+    "start": "nodemon --exec ts-node src/index.ts",
+    "schema-types": "gql-gen --schema http://localhost:4000 --template graphql-codegen-typescript-template --out ./types/schemas \"./src/**/*.graphql\""
   }
 }

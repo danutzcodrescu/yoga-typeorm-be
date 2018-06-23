@@ -3,8 +3,8 @@ type User {
   username: String
   email: String
   password: String
-  created: String
-  lastUpdate: String
+  createdAt: String
+  updatedAt: String
 }
 
 type Query {
