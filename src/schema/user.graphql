@@ -8,9 +8,11 @@ type User {
 }
 
 type Query {
-  users: User
+  users: [User]
+  user(email: String, username: String): User
 }
 
 type Mutation {
   register(email: String, username: String!, password: String): User
+  login(email: String!, password: String!): User
 }
