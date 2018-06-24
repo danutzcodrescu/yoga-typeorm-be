@@ -108,6 +108,7 @@ const userResolver: IResolvers = {
       { email }: User,
       { response }: { response: Response; token: string }
     ) => {
+      console.log(email);
       response.clearCookie('access_token');
       return 'logged out';
     }
