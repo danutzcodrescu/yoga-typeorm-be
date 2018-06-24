@@ -36,6 +36,9 @@ jobs:
       # decrypt ormconfig file
       - run: openssl enc -aes-256-cbc -d -in ormconfig.json.enc -out ormconfig.json -k $FILE_PASS
       # run tests!
-      - run: yarn start-test
+      - run: 
+          name: Run server
+          command: yarn start-test
+          background: true
       - run: yarn test
 
