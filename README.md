@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/danutzcodrescu/yoga-typeorm-be.svg?style=svg)](https://circleci.com/gh/danutzcodrescu/yoga-typeorm-be)
+
 # Awesome Project Build with TypeORM
         
 Steps to run this project:
