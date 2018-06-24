@@ -32,7 +32,7 @@ const server = new GraphQLServer({
 
 server.express.use(cookieParser());
 
-if (process.env.ENGINE) {
+if (process.env.ENGINE === 'true') {
   const engine = new ApolloEngine({
     apiKey: process.env.APOLLO_ENGINE_KEY
   });
