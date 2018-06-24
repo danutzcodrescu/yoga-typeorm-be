@@ -57,7 +57,7 @@ if (process.env.ENGINE === 'true') {
   server.start(() => console.log('Server is running on localhost:4000'));
 }
 
-createConnection()
+createConnection(process.env.NODE_ENV === 'test' ? 'test' : 'default')
   .then(() => {
     // console.log("Inserting a new user into the database...");
     // const user = new User();
