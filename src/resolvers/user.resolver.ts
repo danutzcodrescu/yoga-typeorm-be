@@ -1,7 +1,7 @@
 import { IResolvers } from 'graphql-tools';
 import { User as UserModel } from '../entity/User';
 import { User } from '../../types/schemas/types';
-import { isNil } from 'lodash';
+import { isNil, omit } from 'lodash';
 import { ApolloError } from 'apollo-errors';
 import * as argon from 'argon2';
 import { Response } from 'express';
@@ -39,12 +39,30 @@ const userResolver: IResolvers = {
   },
 
   Mutation: {
-    register: (_, { email, username, password }: User) => {
+    register: async (_, { email, username, password }: User) => {
       const user = new UserModel();
       user.email = email;
       user.password = password;
       user.username = username;
-      return userRepo().save(user);
+      let resp;
+      try {
+        resp = await userRepo().save(user);
+      } catch (e) {
+        if (e.message.includes('duplicate key')) {
+          return new ApolloError(
+            'not_found',
+            { message: 'Duplicate email existing' },
+            { message: 'Duplicate email existing' }
+          );
+        } else {
+          return new ApolloError(
+            'not_found',
+            { message: 'Cannot create new user' },
+            { message: 'Cannot create new user' }
+          );
+        }
+      }
+      return resp;
     },
 
     login: async (
@@ -71,17 +89,18 @@ const userResolver: IResolvers = {
           { message: 'Password is wrong' }
         );
       }
+      const safeUser = omit(user, ['password']);
       const cert = fs.readFileSync(
         path.join(__dirname, '../../certs', 'private.key')
       );
-      const token = jwt.sign({ exp: ms('1d') / 1000, user }, cert, {
+      const token = jwt.sign({ exp: ms('1d') / 1000, safeUser }, cert, {
         algorithm: 'RS256'
       });
       response.cookie('access_token', token, {
         // maxAge: ms('1d') / 1000,
         httpOnly: true
       });
-      return user;
+      return safeUser;
     },
 
     logout: (

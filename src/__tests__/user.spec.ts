@@ -29,6 +29,23 @@ describe('user logic flow', () => {
     done();
   });
 
+  it('should not register user for duplicate email', async done => {
+    const registerMutation = `
+      mutation($email: String!, $username: String!) {
+        register(email: $email, username: $username, password: "test") {
+          email,
+          username
+        }
+      }`;
+    try {
+      await client.request(registerMutation, variables);
+    } catch (e) {
+      expect(e.response.data.register).toBeNull();
+      expect(e.response.errors[0].message).toBe('Duplicate email existing');
+    }
+    done();
+  });
+
   it('should login user', async done => {
     const registerMutation = `
       mutation($email: String!) {
@@ -38,6 +55,8 @@ describe('user logic flow', () => {
         }
       }`;
     const registered = await client.rawRequest(registerMutation, variables);
+    expect(registered.headers.get('set-cookie')).toContain('HttpOnly');
+    expect(registered.headers.get('set-cookie')).toContain('access_token');
     expect(registered.data).toEqual({ login: variables });
     done();
   });
@@ -63,7 +82,7 @@ describe('user logic flow', () => {
       }
       `;
     try {
-      const registered = await client.request(registerMutation, variables);
+      const registered = await client.rawRequest(registerMutation, variables);
       expect(registered).toEqual({ logout: 'logged out' });
     } catch (e) {
       console.log(e);
