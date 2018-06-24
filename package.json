@@ -13,13 +13,14 @@
     "axios": "^0.x.x",
     "dotenv": "^6.x.x",
     "faker": "^4.x.x",
-    "fetch-cookie": "^0.7.0",
+    "fetch-cookie": "^0.x.x",
     "graphql": "^0.x.x",
     "graphql-code-generator": "^0.x.x",
     "graphql-codegen-typescript-template": "^0.x.x",
-    "graphql-request": "^1.6.0",
+    "graphql-request": "^1.x.x",
+    "husky": "^1.x.x",
     "jest": "^23.x.x",
-    "node-fetch": "^2.1.2",
+    "node-fetch": "^2.x.x",
     "nodemon": "^1.x.x",
     "ts-jest": "^22.x.x",
     "ts-node": "6.x.x",
@@ -36,7 +37,7 @@
     "cookie-parser": "^1.x.x",
     "env": "^0.0.2",
     "graphql-yoga": "^1.x.x",
-    "jsonwebtoken": "^8.3.0",
+    "jsonwebtoken": "^8.x.x",
     "lodash": "^4.x.x",
     "merge-graphql-schemas": "^1.x.x",
     "morgan": "^1.x.0",
@@ -51,7 +52,9 @@
     "start-test": "NODE_ENV=test nodemon --exec ts-node src/index.ts",
     "schema-types": "gql-gen --schema http://localhost:4000 --template graphql-codegen-typescript-template --out ./types/schemas \"./src/**/*.graphql\"",
     "test": "jest",
-    "test-watch": "jest --watchAll"
+    "test-watch": "jest --watchAll",
+    "lint": "tslint -p .",
+    "lint-fix": "tslint -p . --fix"
   },
   "jest": {
     "transform": {
@@ -71,5 +74,10 @@
     "ignore": [
       "*.spec.ts"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn run lint"
+    }
   }
 }
