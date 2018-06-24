@@ -5,8 +5,9 @@ import { createConnection } from "typeorm";
 import { GraphQLServer } from "graphql-yoga";
 // import { ApolloEngine } from "apollo-engine";
 // tslint:disable-next-line
-const ms = require("ms");
-import * as session from "express-session";
+import * as cookieParser from "cookie-parser";
+import { isNil } from "lodash";
+
 // tslint:disable-next-line
 require("dotenv").config();
 
@@ -16,29 +17,36 @@ import typeDefs from "./schema/schema";
 const server = new GraphQLServer({
   typeDefs,
   resolvers,
-  context: ({ request, response }) => ({
-    request,
-    response
-  })
+  context: ({ request, response }) => {
+    let token;
+    if (!isNil(request.cookies.access_token)) {
+      token = request.cookies.access_token;
+    }
+    return {
+      response,
+      token
+    };
+  }
 });
 
 // const engine = new ApolloEngine({
 //     apiKey: 'service:danutzcodrescu-9658:WkAUrgrGg4zwqjo6KM3Q2w'
 // });
 
-server.express.use(
-  session({
-    name: "access_token",
-    secret: process.env.SECRET_COOKIE,
-    resave: true,
-    saveUninitialized: true,
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      maxAge: ms("1d"),
-      httpOnly: true
-    }
-  })
-);
+// server.express.use(
+//   session({
+//     name: "access_token",
+//     secret: process.env.SECRET_COOKIE,
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: {
+//       secure: process.env.NODE_ENV === "production",
+//       maxAge: ms("1d"),
+//       httpOnly: true
+//     }
+//   })
+// );
+server.express.use(cookieParser());
 server.start(() => console.log("Server is running on localhost:4000"));
 
 createConnection()
