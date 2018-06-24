@@ -41,6 +41,7 @@ jobs:
           command: yarn start-test
           background: true
 
-      - run: sleep 5000
-      - run: yarn test
+      - run: 
+          name: Run tests
+          command: sleep 5 && yarn test
 
