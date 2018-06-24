@@ -91,7 +91,7 @@ const userResolver: IResolvers = {
       }
       const safeUser = omit(user, ['password']);
       const cert = fs.readFileSync(
-        path.join(__dirname, '../../certs', 'private.key')
+        path.join(__dirname, '../../certs', process.env.test? 'private.key.test' : 'private.prod.key')
       );
       const token = jwt.sign({ exp: ms('1d') / 1000, safeUser }, cert, {
         algorithm: 'RS256'

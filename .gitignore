@@ -6,4 +6,4 @@ tmp/
 temp/
 ormconfig.json
 .env
-certs
+certs/*.prod.key
