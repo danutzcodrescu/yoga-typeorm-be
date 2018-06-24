@@ -95,7 +95,7 @@ const userResolver: IResolvers = {
           __dirname,
           '../../certs',
           process.env.NODE_ENV === 'test'
-            ? 'private.key.test'
+            ? 'private.test.key'
             : 'private.prod.key'
         )
       );
