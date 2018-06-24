@@ -19,7 +19,6 @@ const server = new GraphQLServer({
   resolvers,
   context: ({ request, response }) => {
     let token;
-    console.log(request.cookies);
     if (!isNil(request.cookies.access_token)) {
       token = request.cookies.access_token;
     }
@@ -54,7 +53,9 @@ if (process.env.ENGINE === 'true') {
       )
   );
 } else {
-  server.start(() => console.log('Server is running on localhost:4000'));
+  server.start({ cors: { origin: false } }, () =>
+    console.log('Server is running on localhost:4000')
+  );
 }
 
 createConnection(process.env.NODE_ENV === 'test' ? 'test' : 'default')

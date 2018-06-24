@@ -5,13 +5,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BeforeInsert
-} from "typeorm";
+} from 'typeorm';
 
-import * as argon from "argon2";
+import * as argon from 'argon2';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn("uuid") id: string;
+  @PrimaryGeneratedColumn('uuid') id: string;
 
   @Column() username: string;
 
@@ -19,10 +19,10 @@ export class User {
 
   @Column() email: string;
 
-  @CreateDateColumn({ type: "timestamp" })
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
   @BeforeInsert()

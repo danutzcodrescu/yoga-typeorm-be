@@ -4,17 +4,24 @@
   "description": "Awesome project developed with TypeORM.",
   "devDependencies": {
     "@types/faker": "^4.x.x",
+    "@types/jest": "^23.x.x",
     "@types/jsonwebtoken": "^7.x.x",
     "@types/lodash": "^4.x.x",
     "@types/morgan": "^1.x.x",
     "@types/ms": "^0.x.x",
     "@types/node": "^8.x.x",
+    "axios": "^0.x.x",
     "dotenv": "^6.x.x",
     "faker": "^4.x.x",
+    "fetch-cookie": "^0.7.0",
     "graphql": "^0.x.x",
     "graphql-code-generator": "^0.x.x",
     "graphql-codegen-typescript-template": "^0.x.x",
+    "graphql-request": "^1.6.0",
+    "jest": "^23.x.x",
+    "node-fetch": "^2.1.2",
     "nodemon": "^1.x.x",
+    "ts-jest": "^22.x.x",
     "ts-node": "6.x.x",
     "tslint": "^5.x.x",
     "tslint-config-prettier": "^1.x.x",
@@ -41,6 +48,28 @@
   },
   "scripts": {
     "start": "nodemon --exec ts-node src/index.ts",
-    "schema-types": "gql-gen --schema http://localhost:4000 --template graphql-codegen-typescript-template --out ./types/schemas \"./src/**/*.graphql\""
+    "start-test": "NODE_ENV=test nodemon --exec ts-node src/index.ts",
+    "schema-types": "gql-gen --schema http://localhost:4000 --template graphql-codegen-typescript-template --out ./types/schemas \"./src/**/*.graphql\"",
+    "test": "jest",
+    "test-watch": "jest --watchAll"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.ts?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(ts)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "*.spec.ts"
+    ]
   }
 }
