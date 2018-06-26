@@ -11,6 +11,7 @@
     "@types/ms": "^0.x.x",
     "@types/node": "^8.x.x",
     "axios": "^0.x.x",
+    "copyfiles": "^2.0.0",
     "dotenv": "^6.x.x",
     "faker": "^4.x.x",
     "fetch-cookie": "^0.x.x",
@@ -22,6 +23,7 @@
     "jest": "^23.x.x",
     "node-fetch": "^2.x.x",
     "nodemon": "^1.x.x",
+    "rimraf": "^2.x.x",
     "ts-jest": "^22.x.x",
     "ts-node": "6.x.x",
     "tslint": "^5.x.x",
@@ -50,11 +52,12 @@
   "scripts": {
     "start": "nodemon --exec ts-node src/index.ts",
     "start-test": "NODE_ENV=test nodemon --exec ts-node src/index.ts",
-    "schema-types": "gql-gen --schema http://localhost:4000 --template graphql-codegen-typescript-template --out ./types/schemas \"./src/**/*.graphql\"",
+    "schema-types": "gql-gen --schema http://localhost:4000 --template graphql-codegen-typescript-template --out ./src/types/schemas/index.d.ts \"./src/**/*.graphql\"",
     "test": "jest",
     "test-watch": "jest --watchAll",
     "lint": "tslint -p .",
-    "lint-fix": "tslint -p . --fix"
+    "lint-fix": "tslint -p . --fix",
+    "build": "rimraf ./dist && tsc --noImplicitAny false && copyfiles -u 1 src/**/*.graphql dist"
   },
   "jest": {
     "transform": {

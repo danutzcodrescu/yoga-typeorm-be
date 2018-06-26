@@ -1,6 +1,5 @@
 import { IResolvers } from 'graphql-tools';
 import { User as UserModel } from '../entity/User';
-import { User } from '../../types/schemas/types';
 import { isNil, omit } from 'lodash';
 import { ApolloError } from 'apollo-errors';
 import * as argon from 'argon2';
@@ -9,6 +8,12 @@ import * as jwt from 'jsonwebtoken';
 import * as fs from 'fs';
 import * as path from 'path';
 import { userRepo } from '../helpers/userRepo';
+import {
+  RegisterMutationArgs,
+  LoginMutationArgs,
+  LogoutMutationArgs
+} from 'types/schemas';
+// import { User } from 'schemas/types';
 // tslint:disable-next-line
 const ms = require("ms");
 
@@ -17,7 +22,7 @@ const userResolver: IResolvers = {
     users: () => userRepo().find(),
     user: (
       _,
-      { email, username }: User,
+      { email, username },
       { token }: { response: Response; token: string }
     ) => {
       const decoded = jwt.decode(token) as JWT;
@@ -39,7 +44,10 @@ const userResolver: IResolvers = {
   },
 
   Mutation: {
-    register: async (_, { email, username, password }: User) => {
+    register: async (
+      _,
+      { email, username, password }: RegisterMutationArgs
+    ) => {
       const user = new UserModel();
       user.email = email;
       user.password = password;
@@ -67,7 +75,7 @@ const userResolver: IResolvers = {
 
     login: async (
       _,
-      { email, password }: User,
+      { email, password }: LoginMutationArgs,
       {
         response
       }: { response: Response; token: { response: Response; token: string } }
@@ -111,7 +119,7 @@ const userResolver: IResolvers = {
 
     logout: (
       _,
-      { email }: User,
+      { email }: LogoutMutationArgs,
       { response }: { response: Response; token: string }
     ) => {
       console.log(email);

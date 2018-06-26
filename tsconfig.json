@@ -1,15 +1,21 @@
 {
   "compilerOptions": {
-    "lib": ["es5", "es6", "es2017"],
-    "target": "es6",
+    "lib": ["es5", "es6", "es2017", "esnext.asynciterable"],
+    "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "./build",
+    "outDir": "./dist",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "noImplicitAny": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
-  }
+    "noUnusedParameters": true,
+    "baseUrl": "src",
+    "paths": {
+      "schemas/*": ["types/schemas/*"]
+    }
+  },
+  "include": ["./src/**/*.ts"],
+  "exclude": ["./node_modules", "**/*.spec.ts"]
 }
