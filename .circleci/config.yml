@@ -37,11 +37,6 @@ jobs:
       - run: openssl enc -aes-256-cbc -d -in ormconfig.json.enc -out ormconfig.json -k $FILE_PASS
       # run tests!
       - run: 
-          name: Run server
-          command: yarn start-test
-          background: true
-
-      - run: 
           name: Run tests
-          command: sleep 5 && yarn test
+          command: yarn test-cli
 
