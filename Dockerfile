@@ -1,13 +1,17 @@
-FROM node:8
+FROM node:8-alpine
+LABEL author=DANUT
 
-WORKDIR /dist
+ENV NODE_ENV=production
 
-COPY package*.json ./
-COPY dist ./
-COPY ormconfig.json ./
+COPY ./dist ./src
+COPY ormconfig.json .
+COPY package.json .
+COPY ./certs ./certs
 
-RUN npm install
+RUN apk add --no-cache --virtual .build-deps alpine-sdk python \
+  && npm install \
+  && apk del .build-deps
 
 EXPOSE 4000
 
-CMD [ "node", "index.js" ]
+CMD [ "npm", "run", "start-prod" ]

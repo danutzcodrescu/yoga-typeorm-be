@@ -7,9 +7,10 @@ import { ApolloEngine } from 'apollo-engine';
 // tslint:disable-next-line
 import * as cookieParser from "cookie-parser";
 import { isNil } from 'lodash';
+import * as morgan from 'morgan';
 
 // tslint:disable-next-line
-require("dotenv").config();
+if (process.env.NODE_ENV !== "production") require("dotenv").config();
 
 import resolvers from './resolvers/index.resolvers';
 import typeDefs from './schema/schema';
@@ -29,36 +30,17 @@ const server = new GraphQLServer({
   }
 });
 
+server.express.use(morgan('dev'));
 server.express.use(cookieParser());
 
-if (process.env.ENGINE === 'true') {
-  const engine = new ApolloEngine({
-    apiKey: process.env.APOLLO_ENGINE_KEY
-  });
+const db =
+  process.env.NODE_ENV === 'test'
+    ? 'test'
+    : process.env.NODE_ENV === 'production'
+      ? 'production'
+      : 'default';
 
-  const httpServer = server.createHttpServer({
-    tracing: true,
-    cacheControl: true
-  });
-
-  engine.listen(
-    {
-      port: 4000,
-      httpServer,
-      graphqlPaths: ['/']
-    },
-    () =>
-      console.log(
-        `Server with Apollo Engine is running on http://localhost:4000`
-      )
-  );
-} else {
-  server.start({ cors: { origin: false } }, () =>
-    console.log('Server is running on localhost:4000')
-  );
-}
-
-createConnection(process.env.NODE_ENV === 'test' ? 'test' : 'default')
+createConnection(db)
   .then(() => {
     // console.log("Inserting a new user into the database...");
     // const user = new User();
@@ -75,5 +57,32 @@ createConnection(process.env.NODE_ENV === 'test' ? 'test' : 'default')
 
     // console.log("Here you can setup and run express/koa/any other framework.");
     console.log('connection to db established');
+
+    if (process.env.ENGINE === 'true') {
+      const engine = new ApolloEngine({
+        apiKey: process.env.APOLLO_ENGINE_KEY
+      });
+
+      const httpServer = server.createHttpServer({
+        tracing: true,
+        cacheControl: true
+      });
+
+      engine.listen(
+        {
+          port: 4000,
+          httpServer,
+          graphqlPaths: ['/']
+        },
+        () =>
+          console.log(
+            `Server with Apollo Engine is running on http://localhost:4000`
+          )
+      );
+    } else {
+      server.start({ cors: { origin: false } }, () =>
+        console.log('Server is running on localhost:4000')
+      );
+    }
   })
   .catch(error => console.log(error));

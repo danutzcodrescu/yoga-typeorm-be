@@ -13,7 +13,6 @@ import {
   LoginMutationArgs,
   LogoutMutationArgs
 } from 'types/schemas';
-// import { User } from 'schemas/types';
 // tslint:disable-next-line
 const ms = require("ms");
 
@@ -111,7 +110,6 @@ const userResolver: IResolvers = {
         algorithm: 'RS256'
       });
       response.cookie('access_token', token, {
-        // maxAge: ms('1d') / 1000,
         httpOnly: true
       });
       return safeUser;

@@ -23,7 +23,7 @@
     "jest": "^23.x.x",
     "node-fetch": "^2.x.x",
     "nodemon": "^1.x.x",
-    "rimraf": "^2.x.x",
+    "rimraf": "^2.6.2",
     "start-server-and-test": "^1.x.x",
     "ts-jest": "^22.x.x",
     "ts-node": "6.x.x",
@@ -43,7 +43,7 @@
     "jsonwebtoken": "^8.x.x",
     "lodash": "^4.x.x",
     "merge-graphql-schemas": "^1.x.x",
-    "morgan": "^1.x.0",
+    "morgan": "^1.9.0",
     "ms": "^2.x.x",
     "path": "^0.x.x",
     "pg": "^7.x.x",
@@ -52,6 +52,7 @@
   },
   "scripts": {
     "start": "nodemon --exec ts-node src/index.ts",
+    "start-prod": "node ./src/index",
     "start-test": "NODE_ENV=test nodemon --exec ts-node src/index.ts",
     "schema-types": "gql-gen --schema http://localhost:4000 --template graphql-codegen-typescript-template --out ./src/types/schemas/index.d.ts \"./src/**/*.graphql\"",
     "test": "jest",
@@ -78,7 +79,8 @@
   "nodemonConfig": {
     "ignore": [
       "*.spec.ts"
-    ]
+    ],
+    "ext": "*.pde"
   },
   "husky": {
     "hooks": {

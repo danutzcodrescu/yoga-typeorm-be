@@ -23,9 +23,9 @@ export interface UserQueryArgs {
   username?: string | null;
 }
 export interface RegisterMutationArgs {
-  email?: string | null;
+  email: string;
   username: string;
-  password?: string | null;
+  password: string;
 }
 export interface LoginMutationArgs {
   email: string;
