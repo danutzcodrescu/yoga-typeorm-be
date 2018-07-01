@@ -7,10 +7,7 @@ COPY ./dist ./src
 COPY ormconfig.json .
 COPY package.json .
 COPY ./certs ./certs
-
-RUN apk add --no-cache --virtual .build-deps alpine-sdk python \
-  && npm install \
-  && apk del .build-deps
+COPY ./node_modules ./node_modules
 
 EXPOSE 4000
 
