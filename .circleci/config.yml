@@ -43,10 +43,6 @@ jobs:
   build:
     docker:
       - image: danutzcodrescu/circle-ci-docker:v2.1 
-        aws_auth:
-          aws_access_key_id: $AWS_ACCESS_KEY_ID
-          aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
-          aws_region: $REGION
     steps:
       - checkout
       - setup_remote_docker
