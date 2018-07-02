@@ -1,12 +1,13 @@
-import { GraphQLClient } from 'graphql-request';
 import * as faker from 'faker';
-// tslint:disable
-(global as any)["fetch"] = require("fetch-cookie/node-fetch")(
-  require("node-fetch")
-);
-// tslint:enable
+import axios from 'axios';
 
-const client = new GraphQLClient('http://localhost:4000');
+axios.defaults.withCredentials = true;
+const instance = axios.create({
+  baseURL: 'http://localhost:4000',
+  withCredentials: true
+});
+
+let cookie: string;
 
 describe('user logic flow', () => {
   let variables: any;
@@ -24,8 +25,11 @@ describe('user logic flow', () => {
           username
         }
       }`;
-    const registered = await client.request(registerMutation, variables);
-    expect(registered).toEqual({ register: variables });
+    const registered = await instance.post('/', {
+      query: registerMutation,
+      variables
+    });
+    expect(registered.data.data).toEqual({ register: variables });
     done();
   });
 
@@ -38,7 +42,7 @@ describe('user logic flow', () => {
         }
       }`;
     try {
-      await client.request(registerMutation, variables);
+      await instance.post('/', { query: registerMutation, variables });
     } catch (e) {
       expect(e.response.data.register).toBeNull();
       expect(e.response.errors[0].message).toBe('Duplicate email existing');
@@ -47,17 +51,21 @@ describe('user logic flow', () => {
   });
 
   it('should login user', async done => {
-    const registerMutation = `
+    const loginMutation = `
       mutation($email: String!) {
         login(email: $email, password: "test") {
           email,
           username
         }
       }`;
-    const registered = await client.rawRequest(registerMutation, variables);
-    expect(registered.headers.get('set-cookie')).toContain('HttpOnly');
-    expect(registered.headers.get('set-cookie')).toContain('access_token');
-    expect(registered.data).toEqual({ login: variables });
+    const logined = await instance.post('/', {
+      variables,
+      query: loginMutation
+    });
+    expect(logined.headers['set-cookie'][0]).toContain('HttpOnly');
+    expect(logined.headers['set-cookie'][0]).toContain('access_token');
+    cookie = logined.headers['set-cookie'][0];
+    expect(logined.data.data).toEqual({ login: variables });
     done();
   });
 
@@ -70,23 +78,30 @@ describe('user logic flow', () => {
         }
       }
       `;
-    const registered = await client.request(registerMutation, variables);
-    expect(registered).toEqual({ user: variables });
+    const registered = await instance.post(
+      '/',
+      {
+        variables,
+        query: registerMutation
+      },
+      { headers: { Cookie: cookie } }
+    );
+    expect(registered.data.data).toEqual({ user: variables });
     done();
   });
 
   it('should logout user', async done => {
-    const registerMutation = `
+    const logoutMutation = `
       mutation ($email: String!) {
         logout(email: $email)
       }
       `;
-    try {
-      const registered = await client.rawRequest(registerMutation, variables);
-      expect(registered).toEqual({ logout: 'logged out' });
-    } catch (e) {
-      console.log(e);
-    }
+    const loggedOut = await instance.post('/', {
+      variables,
+      query: logoutMutation
+    });
+    expect(loggedOut.headers['set-cookie'][0]).toContain('Thu, 01 Jan 1970');
+    expect(loggedOut.data.data).toEqual({ logout: 'logged out' });
     done();
   });
 
@@ -99,9 +114,12 @@ describe('user logic flow', () => {
         }
       }
       `;
-    client.request(registerMutation, variables).catch(err => {
+    try {
+      await instance.post('/', { query: registerMutation, variables });
+    } catch (err) {
+      console.log(err);
       expect(err).toBeDefined();
-      done();
-    });
+    }
+    done();
   });
 });

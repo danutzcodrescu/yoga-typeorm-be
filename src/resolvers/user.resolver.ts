@@ -13,8 +13,8 @@ import {
   LoginMutationArgs,
   LogoutMutationArgs
 } from 'types/schemas';
-// tslint:disable-next-line
-const ms = require("ms");
+
+import { addDays, getTime } from 'date-fns';
 
 const userResolver: IResolvers = {
   Query: {
@@ -25,6 +25,7 @@ const userResolver: IResolvers = {
       { token }: { response: Response; token: string }
     ) => {
       const decoded = jwt.decode(token) as JWT;
+      console.log('test', decoded);
       if (isNil(decoded)) {
         return new ApolloError(
           'must_authenticate',
@@ -32,6 +33,7 @@ const userResolver: IResolvers = {
           { message: 'Not authenticated' }
         );
       }
+      console.log({ username }, { email });
       return userRepo()
         .createQueryBuilder('user')
         .where('user.email = :email OR user.username = :username', {
@@ -106,11 +108,15 @@ const userResolver: IResolvers = {
             : 'private.prod.key'
         )
       );
-      const token = jwt.sign({ exp: ms('1d') / 1000, safeUser }, cert, {
+      const expires = addDays(new Date(), 1);
+      const seconds = getTime(expires) / 1000;
+      const token = jwt.sign({ exp: seconds, safeUser }, cert, {
         algorithm: 'RS256'
       });
       response.cookie('access_token', token, {
-        httpOnly: true
+        httpOnly: true,
+        expires,
+        maxAge: seconds
       });
       return safeUser;
     },
