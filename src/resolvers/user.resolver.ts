@@ -16,6 +16,22 @@ import {
 
 import { addDays, getTime } from 'date-fns';
 
+const cert = fs.readFileSync(
+  path.join(
+    __dirname,
+    '../../certs',
+    process.env.NODE_ENV === 'test' ? 'private.test.key' : 'private.prod.key'
+  )
+);
+
+const publicCert = fs.readFileSync(
+  path.join(
+    __dirname,
+    '../../certs',
+    process.env.NODE_ENV === 'test' ? 'public.test.key' : 'public.prod.key'
+  )
+);
+
 const userResolver: IResolvers = {
   Query: {
     users: () => userRepo().find(),
@@ -24,16 +40,15 @@ const userResolver: IResolvers = {
       { email, username },
       { token }: { response: Response; token: string }
     ) => {
-      const decoded = jwt.decode(token) as JWT;
-      console.log('test', decoded);
-      if (isNil(decoded)) {
+      try {
+        jwt.verify(token, publicCert);
+      } catch {
         return new ApolloError(
           'must_authenticate',
           { message: 'Not authenticated' },
           { message: 'Not authenticated' }
         );
       }
-      console.log({ username }, { email });
       return userRepo()
         .createQueryBuilder('user')
         .where('user.email = :email OR user.username = :username', {
@@ -99,15 +114,6 @@ const userResolver: IResolvers = {
         );
       }
       const safeUser = omit(user, ['password']);
-      const cert = fs.readFileSync(
-        path.join(
-          __dirname,
-          '../../certs',
-          process.env.NODE_ENV === 'test'
-            ? 'private.test.key'
-            : 'private.prod.key'
-        )
-      );
       const expires = addDays(new Date(), 1);
       const seconds = getTime(expires) / 1000;
       const token = jwt.sign({ exp: seconds, safeUser }, cert, {
@@ -116,7 +122,7 @@ const userResolver: IResolvers = {
       response.cookie('access_token', token, {
         httpOnly: true,
         expires,
-        maxAge: seconds
+        maxAge: 1000 * 60 * 60 * 24
       });
       return safeUser;
     },
@@ -133,9 +139,9 @@ const userResolver: IResolvers = {
   }
 };
 
-interface JWT {
-  exp: number;
-  user: any;
-  iat: number;
-}
+// interface JWT {
+//   exp: number;
+//   user: any;
+//   iat: number;
+// }
 export default userResolver;

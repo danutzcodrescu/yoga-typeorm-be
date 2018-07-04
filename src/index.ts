@@ -20,7 +20,6 @@ const server = new GraphQLServer({
   resolvers,
   context: ({ request, response }) => {
     let token;
-    console.log(request.get('origin'), request.get('host'));
     if (!isNil(request.cookies.access_token)) {
       token = request.cookies.access_token;
     }
