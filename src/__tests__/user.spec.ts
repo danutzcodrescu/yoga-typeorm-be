@@ -1,5 +1,6 @@
 import * as faker from 'faker';
 import axios from 'axios';
+import { userRepo } from '../helpers/userRepo';
 
 axios.defaults.withCredentials = true;
 const instance = axios.create({
@@ -55,7 +56,8 @@ describe('user logic flow', () => {
       mutation($email: String!) {
         login(email: $email, password: "test") {
           email,
-          username
+          username,
+          status
         }
       }`;
     const logined = await instance.post('/', {
@@ -65,7 +67,9 @@ describe('user logic flow', () => {
     expect(logined.headers['set-cookie'][0]).toContain('HttpOnly');
     expect(logined.headers['set-cookie'][0]).toContain('access_token');
     cookie = logined.headers['set-cookie'][0];
-    expect(logined.data.data).toEqual({ login: variables });
+    expect(logined.data.data).toEqual({
+      login: { ...variables, status: 'active' }
+    });
     done();
   });
 
@@ -102,6 +106,8 @@ describe('user logic flow', () => {
     });
     expect(loggedOut.headers['set-cookie'][0]).toContain('Thu, 01 Jan 1970');
     expect(loggedOut.data.data).toEqual({ logout: 'logged out' });
+    const user = await userRepo().findOne({ email: variables.email });
+    expect(user.status).toBe('logged out');
     done();
   });
 

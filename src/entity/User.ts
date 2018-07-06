@@ -9,6 +9,12 @@ import {
 
 import * as argon from 'argon2';
 
+export enum Status {
+  active = 'active',
+  inactive = 'logged out',
+  away = 'away'
+}
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid') id: string;
@@ -19,6 +25,13 @@ export class User {
 
   @Column({ unique: true })
   email: string;
+
+  @Column({
+    type: 'enum',
+    enum: ['active', 'logged out', 'away'],
+    default: 'logged out'
+  })
+  status: Status;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

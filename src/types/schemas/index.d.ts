@@ -9,6 +9,7 @@ export interface User {
   id?: string | null;
   username?: string | null;
   email?: string | null;
+  status?: string | null;
   createdAt?: string | null;
   updatedAt?: string | null;
 }

@@ -1,5 +1,5 @@
 import { IResolvers } from 'graphql-tools';
-import { User as UserModel } from '../entity/User';
+import { User as UserModel, Status } from '../entity/User';
 import { isNil, omit } from 'lodash';
 import { ApolloError } from 'apollo-errors';
 import * as argon from 'argon2';
@@ -113,12 +113,21 @@ const userResolver: IResolvers = {
           { message: 'Password is wrong' }
         );
       }
-      const safeUser = omit(user, ['password']);
+      user.status = Status.active;
+      let safeUser;
+      try {
+        safeUser = await userRepo().save(user);
+        safeUser = omit(user, ['password']);
+      } catch (e) {
+        console.log(e);
+      }
+
       const expires = addDays(new Date(), 1);
       const seconds = getTime(expires) / 1000;
       const token = jwt.sign({ exp: seconds, safeUser }, cert, {
         algorithm: 'RS256'
       });
+
       response.cookie('access_token', token, {
         httpOnly: true,
         expires,
@@ -127,12 +136,34 @@ const userResolver: IResolvers = {
       return safeUser;
     },
 
-    logout: (
+    logout: async (
       _,
       { email }: LogoutMutationArgs,
-      { response }: { response: Response; token: string }
+      { response, token }: { response: Response; token: string }
     ) => {
-      console.log(email);
+      try {
+        jwt.verify(token, publicCert);
+      } catch {
+        return new ApolloError(
+          'must_authenticate',
+          { message: 'Not authenticated' },
+          { message: 'Not authenticated' }
+        );
+      }
+      const user = await userRepo().findOne({ where: { email } });
+      if (isNil(user)) {
+        return new ApolloError(
+          'not_found',
+          { message: 'User not found' },
+          { message: 'User not found' }
+        );
+      }
+      user.status = Status.inactive;
+      try {
+        await userRepo().save(user);
+      } catch (e) {
+        console.log(e);
+      }
       response.clearCookie('access_token');
       return 'logged out';
     }

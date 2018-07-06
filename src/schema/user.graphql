@@ -2,6 +2,7 @@ type User {
   id: String
   username: String
   email: String
+  status: String
   createdAt: String
   updatedAt: String
 }
