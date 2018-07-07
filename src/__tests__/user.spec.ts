@@ -1,8 +1,6 @@
 import * as faker from 'faker';
 import axios from 'axios';
-import { userRepo } from '../helpers/userRepo';
 
-axios.defaults.withCredentials = true;
 const instance = axios.create({
   baseURL: 'http://localhost:4000',
   withCredentials: true
@@ -100,14 +98,16 @@ describe('user logic flow', () => {
         logout(email: $email)
       }
       `;
-    const loggedOut = await instance.post('/', {
-      variables,
-      query: logoutMutation
-    });
+    const loggedOut = await instance.post(
+      '/',
+      {
+        variables,
+        query: logoutMutation
+      },
+      { headers: { Cookie: cookie } }
+    );
     expect(loggedOut.headers['set-cookie'][0]).toContain('Thu, 01 Jan 1970');
     expect(loggedOut.data.data).toEqual({ logout: 'logged out' });
-    const user = await userRepo().findOne({ email: variables.email });
-    expect(user.status).toBe('logged out');
     done();
   });
 
