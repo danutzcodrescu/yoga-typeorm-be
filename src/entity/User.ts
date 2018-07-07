@@ -33,6 +33,9 @@ export class User {
   })
   status: Status;
 
+  @Column('varchar', { array: true, default: {} })
+  friends: string[];
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 

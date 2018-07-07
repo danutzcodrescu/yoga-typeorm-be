@@ -33,6 +33,13 @@ const publicCert = fs.readFileSync(
 );
 
 const userResolver: IResolvers = {
+  User: {
+    friends: (user: UserModel) =>
+      userRepo()
+        .createQueryBuilder()
+        .where('id IN (:...array)', { array: user.friends })
+        .getMany()
+  },
   Query: {
     users: () => userRepo().find(),
     user: (
@@ -124,7 +131,7 @@ const userResolver: IResolvers = {
 
       const expires = addDays(new Date(), 1);
       const seconds = getTime(expires) / 1000;
-      const token = jwt.sign({ exp: seconds, safeUser }, cert, {
+      const token = jwt.sign({ exp: seconds, user: safeUser }, cert, {
         algorithm: 'RS256'
       });
 
@@ -150,29 +157,51 @@ const userResolver: IResolvers = {
           { message: 'Not authenticated' }
         );
       }
-      const user = await userRepo().findOne({ where: { email } });
-      if (isNil(user)) {
+      try {
+        await userRepo()
+          .createQueryBuilder()
+          .update()
+          .set({ status: Status.inactive })
+          .where('email = :email', { email })
+          .execute();
+      } catch (e) {
         return new ApolloError(
           'not_found',
           { message: 'User not found' },
           { message: 'User not found' }
         );
       }
-      user.status = Status.inactive;
+      response.clearCookie('access_token');
+      return 'logged out';
+    },
+
+    addFriend: async (_, { id }, { token }) => {
+      let decoded: JWT;
       try {
-        await userRepo().save(user);
+        decoded = jwt.verify(token, publicCert) as JWT;
+      } catch {
+        return new ApolloError(
+          'must_authenticate',
+          { message: 'Not authenticated' },
+          { message: 'Not authenticated' }
+        );
+      }
+      try {
+        await userRepo().query(
+          'UPDATE "user" SET friends = array_append(friends, $1) WHERE id = $2',
+          [id, decoded.user.id]
+        );
       } catch (e) {
         console.log(e);
       }
-      response.clearCookie('access_token');
-      return 'logged out';
+      return userRepo().findOne({ id: decoded.user.id });
     }
   }
 };
 
-// interface JWT {
-//   exp: number;
-//   user: any;
-//   iat: number;
-// }
+interface JWT {
+  exp: number;
+  user: any;
+  iat: number;
+}
 export default userResolver;
