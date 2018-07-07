@@ -7,4 +7,4 @@ temp/
 ormconfig.json
 .env
 certs/*.prod.key
-dist
+dist/

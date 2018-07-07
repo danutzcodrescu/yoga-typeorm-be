@@ -19,7 +19,9 @@
     "noUnusedLocals": true,
     "baseUrl": "src",
     "paths": {
-      "schemas/*": ["types/schemas/*"]
+      "schemas/*": ["types/schemas/*"],
+      "helpers/*": ["helpers/*"],
+      "controllers/*": ["controllers/*"]
     }
   },
   "exclude": ["./node_modules", "**/*.spec.ts"]
