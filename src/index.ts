@@ -14,10 +14,15 @@ if (process.env.NODE_ENV !== "production") require("dotenv").config();
 
 import resolvers from './resolvers/index.resolvers';
 import typeDefs from './schema/schema';
+import { auth } from './middlewares/auth.middleware';
+import { applyMiddleware } from 'graphql-middleware';
+import { makeExecutableSchema } from 'graphql-tools';
+
+const schema = makeExecutableSchema({ typeDefs, resolvers });
+const protectedSchema = applyMiddleware(schema, auth);
 
 const server = new GraphQLServer({
-  typeDefs,
-  resolvers,
+  schema: protectedSchema,
   context: ({ request, response }) => {
     let token;
     if (!isNil(request.cookies.access_token)) {
