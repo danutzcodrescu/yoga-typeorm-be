@@ -18,4 +18,11 @@ export class UserRepository extends Repository<User> {
       .where('id IN (:...array)', { array: friends })
       .getMany();
   }
+
+  addFriend(friendId: string, userId: string) {
+    return this.query(
+      'UPDATE "user" SET friends = array_append(friends, $1) WHERE id = $2',
+      [friendId, userId]
+    );
+  }
 }

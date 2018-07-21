@@ -110,10 +110,10 @@ const userResolver: IResolvers = {
 
     addFriend: async (_, { id }, { user }: { user: UserModel }) => {
       try {
-        await userRepo().query(
-          'UPDATE "user" SET friends = array_append(friends, $1) WHERE id = $2',
-          [id, user.id]
-        );
+        Promise.all([
+          userRepo().addFriend(id, user.id),
+          userRepo().addFriend(user.id, id)
+        ]);
       } catch (e) {
         console.log(e);
       }

@@ -144,8 +144,10 @@ describe('add friends', () => {
       username: faker.internet.userName()
     }
   };
+  let User1: User;
+  let User2: User;
   beforeAll(async () => {
-    await createConnection();
+    await createConnection('test');
 
     const user1 = new User();
     user1.email = variables.user1.email;
@@ -156,7 +158,12 @@ describe('add friends', () => {
     user2.email = variables.user2.email;
     user2.username = variables.user2.username;
     user2.password = 'test';
-    await Promise.all([userRepo().save(user1), userRepo().save(user2)]);
+
+    [User1, User2] = await Promise.all([
+      userRepo().save(user1),
+      userRepo().save(user2)
+    ]);
+
     const loginMutation = `
       mutation($email: String!) {
         login(email: $email, password: "test") {
@@ -167,7 +174,7 @@ describe('add friends', () => {
       }`;
     const resp = await instance.post('/', {
       variables: {
-        email: user1.email,
+        email: User1.email,
         password: 'test'
       },
       query: loginMutation
@@ -176,7 +183,6 @@ describe('add friends', () => {
   });
 
   it('should add a friend', async () => {
-    const user = await userRepo().findOne({ email: variables.user2.email });
     const addFriendMutation = `
       mutation($id: String!) {
         addFriend(id: $id) {
@@ -190,14 +196,16 @@ describe('add friends', () => {
       '/',
       {
         variables: {
-          id: user.id
+          id: User2.id
         },
         query: addFriendMutation
       },
       { headers: { Cookie: cookie } }
     );
     expect(friends.data.data.addFriend.friends).toContainEqual({
-      email: variables.user2.email
+      email: User2.email
     });
+    const user = await userRepo().findOne({ id: User2.id });
+    expect(user.friends).toContain(User1.id);
   });
 });

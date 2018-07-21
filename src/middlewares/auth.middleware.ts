@@ -10,7 +10,11 @@ import * as argon from 'argon2';
 import { LoginMutationArgs } from 'types/schemas';
 
 const publicCert = fs.readFileSync(
-  path.join(__dirname, '../../certs', 'public.prod.key')
+  path.join(
+    __dirname,
+    '../../certs',
+    process.env.NODE_ENV === 'test' ? 'public.test.key' : 'public.prod.key'
+  )
 );
 
 export const logedInMiddleware = async (
