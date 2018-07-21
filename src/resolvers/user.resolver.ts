@@ -21,10 +21,7 @@ const cert = fs.readFileSync(
 const userResolver: IResolvers = {
   User: {
     friends: (user: UserModel) =>
-      userRepo()
-        .createQueryBuilder()
-        .where('id IN (:...array)', { array: user.friends })
-        .getMany()
+      user.friends.length > 0 ? userRepo().findFriends(user.friends) : []
   },
   Query: {
     users: () => userRepo().find(),
