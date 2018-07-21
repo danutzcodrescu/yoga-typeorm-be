@@ -47,20 +47,6 @@ const db =
 
 createConnection(db)
   .then(() => {
-    // console.log("Inserting a new user into the database...");
-    // const user = new User();
-
-    // user.username = "test2";
-    // user.password = "sasa";
-    // user.email = "test2@test.com";
-    // await connection.manager.save(user);
-    // console.log("Saved a new user with id: " + user.id);
-
-    // console.log("Loading users from the database...");
-    // const users = await connection.manager.find(User);
-    // console.log("Loaded users: ", users);
-
-    // console.log("Here you can setup and run express/koa/any other framework.");
     console.log('connection to db established');
 
     if (process.env.ENGINE === 'true') {

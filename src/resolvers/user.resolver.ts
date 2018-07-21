@@ -1,18 +1,12 @@
 import { IResolvers } from 'graphql-tools';
 import { User as UserModel, Status } from '../entity/User';
-import { isNil, omit } from 'lodash';
-import { ApolloError } from 'apollo-errors';
-import * as argon from 'argon2';
+import { omit } from 'lodash';
 import { Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import * as fs from 'fs';
 import * as path from 'path';
 import { userRepo } from '../helpers/userRepo';
-import {
-  RegisterMutationArgs,
-  LoginMutationArgs,
-  LogoutMutationArgs
-} from 'types/schemas';
+import { RegisterMutationArgs, LogoutMutationArgs } from 'types/schemas';
 
 import { addDays, getTime } from 'date-fns';
 
@@ -21,14 +15,6 @@ const cert = fs.readFileSync(
     __dirname,
     '../../certs',
     process.env.NODE_ENV === 'test' ? 'private.test.key' : 'private.prod.key'
-  )
-);
-
-const publicCert = fs.readFileSync(
-  path.join(
-    __dirname,
-    '../../certs',
-    process.env.NODE_ENV === 'test' ? 'public.test.key' : 'public.prod.key'
   )
 );
 
@@ -42,20 +28,7 @@ const userResolver: IResolvers = {
   },
   Query: {
     users: () => userRepo().find(),
-    user: (
-      _,
-      { email, username },
-      { token }: { response: Response; token: string }
-    ) => {
-      try {
-        jwt.verify(token, publicCert);
-      } catch {
-        return new ApolloError(
-          'must_authenticate',
-          { message: 'Not authenticated' },
-          { message: 'Not authenticated' }
-        );
-      }
+    user: (_, { email, username }) => {
       return userRepo()
         .createQueryBuilder('user')
         .where('user.email = :email OR user.username = :username', {
@@ -80,17 +53,9 @@ const userResolver: IResolvers = {
         resp = await userRepo().save(user);
       } catch (e) {
         if (e.message.includes('duplicate key')) {
-          return new ApolloError(
-            'not_found',
-            { message: 'Duplicate email existing' },
-            { message: 'Duplicate email existing' }
-          );
+          return new Error('Duplicate email');
         } else {
-          return new ApolloError(
-            'not_found',
-            { message: 'Cannot create new user' },
-            { message: 'Cannot create new user' }
-          );
+          return new Error('Cannot create');
         }
       }
       return resp;
@@ -98,28 +63,9 @@ const userResolver: IResolvers = {
 
     login: async (
       _,
-      { email, password }: LoginMutationArgs,
-      {
-        response
-      }: { response: Response; token: { response: Response; token: string } }
+      __,
+      { response, user }: { response: Response; user: UserModel }
     ) => {
-      const user = await userRepo().findOne({
-        where: { email }
-      });
-      if (isNil(user)) {
-        return new ApolloError(
-          'not_found',
-          { message: 'User not found' },
-          { message: 'User not found' }
-        );
-      }
-      if (!(await argon.verify(user.password, password))) {
-        return new ApolloError(
-          'not_found',
-          { message: 'Password is wrong' },
-          { message: 'Password is wrong' }
-        );
-      }
       user.status = Status.active;
       let safeUser;
       try {
@@ -146,16 +92,10 @@ const userResolver: IResolvers = {
     logout: async (
       _,
       { email }: LogoutMutationArgs,
-      { response, token }: { response: Response; token: string }
+      { response, user }: { response: Response; user: UserModel }
     ) => {
-      try {
-        jwt.verify(token, publicCert);
-      } catch {
-        return new ApolloError(
-          'must_authenticate',
-          { message: 'Not authenticated' },
-          { message: 'Not authenticated' }
-        );
+      if (email !== user.email) {
+        return new Error('no simmilar emails');
       }
       try {
         await userRepo()
@@ -165,41 +105,27 @@ const userResolver: IResolvers = {
           .where('email = :email', { email })
           .execute();
       } catch (e) {
-        return new ApolloError(
-          'not_found',
-          { message: 'User not found' },
-          { message: 'User not found' }
-        );
+        return new Error('log off failed');
       }
       response.clearCookie('access_token');
       return 'logged out';
     },
 
-    addFriend: async (_, { id }, { token }) => {
-      let decoded: JWT;
-      try {
-        decoded = jwt.verify(token, publicCert) as JWT;
-      } catch {
-        return new ApolloError(
-          'must_authenticate',
-          { message: 'Not authenticated' },
-          { message: 'Not authenticated' }
-        );
-      }
+    addFriend: async (_, { id }, { user }: { user: UserModel }) => {
       try {
         await userRepo().query(
           'UPDATE "user" SET friends = array_append(friends, $1) WHERE id = $2',
-          [id, decoded.user.id]
+          [id, user.id]
         );
       } catch (e) {
         console.log(e);
       }
-      return userRepo().findOne({ id: decoded.user.id });
+      return userRepo().findOne({ id: user.id });
     }
   }
 };
 
-interface JWT {
+export interface JWT {
   exp: number;
   user: any;
   iat: number;
