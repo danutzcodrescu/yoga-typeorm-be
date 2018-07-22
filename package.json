@@ -62,7 +62,8 @@
     "lint-fix": "tslint -p . --fix",
     "style-format": "prettier --list-different \"src/**/*.ts\"",
     "build": "rimraf ./dist && tsc --noImplicitAny false && copyfiles -u 1 src/**/*.graphql dist",
-    "test-cli": "start-server-and-test start-test http://localhost:4000 test"
+    "test-cli": "start-server-and-test start-test http://localhost:4000 test",
+    "seeddb": "ts-node seeddb.ts"
   },
   "jest": {
     "transform": {

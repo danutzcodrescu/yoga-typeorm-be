@@ -8,6 +8,11 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/node:8.11
+      - image: circleci/postgres:10.4
+        environment:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: test123
+          POSTGRES_DB: users-test
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
