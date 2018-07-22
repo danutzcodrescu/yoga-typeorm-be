@@ -10,7 +10,6 @@
     "interface-name": false,
     "quotemark": [true, "single"],
     "no-shadowed-variable": false,
-    "no-submodule-imports": false,
-    "prettier/singleQuote": true
+    "no-submodule-imports": false
   }
 }
