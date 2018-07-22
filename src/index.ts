@@ -5,12 +5,12 @@ import { createConnection } from 'typeorm';
 import { GraphQLServer } from 'graphql-yoga';
 import { ApolloEngine } from 'apollo-engine';
 // tslint:disable-next-line
-import * as cookieParser from "cookie-parser";
+import * as cookieParser from 'cookie-parser';
 import { isNil } from 'lodash';
 import * as morgan from 'morgan';
 
 // tslint:disable-next-line
-if (process.env.NODE_ENV !== "production") require("dotenv").config();
+if (process.env.NODE_ENV !== 'production') require('dotenv').config();
 
 import resolvers from './resolvers/index.resolvers';
 import typeDefs from './schema/schema';
