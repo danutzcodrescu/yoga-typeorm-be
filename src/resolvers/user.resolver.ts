@@ -105,13 +105,15 @@ const userResolver: IResolvers = {
     },
 
     addFriend: async (_, { id }, { user }: AppContext) => {
-      try {
-        Promise.all([
-          userRepo().addFriend(id, user.id),
-          userRepo().addFriend(user.id, id)
-        ]);
-      } catch (e) {
-        console.log(e);
+      if (!user.friends.includes(id)) {
+        try {
+          await Promise.all([
+            userRepo().addFriend(id, user.id),
+            userRepo().addFriend(user.id, id)
+          ]);
+        } catch (e) {
+          console.log(e);
+        }
       }
       return userRepo().findOne({ id: user.id });
     }

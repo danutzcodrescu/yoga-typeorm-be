@@ -208,4 +208,31 @@ describe('add friends', () => {
     const user = await userRepo().findOne({ id: User2.id });
     expect(user.friends).toContain(User1.id);
   });
+
+  it('should not existing friend', async () => {
+    const addFriendMutation = `
+      mutation($id: String!) {
+        addFriend(id: $id) {
+           friends {
+             email
+           }
+        }
+      }`;
+
+    const friends = await instance.post(
+      '/',
+      {
+        variables: {
+          id: User2.id
+        },
+        query: addFriendMutation
+      },
+      { headers: { Cookie: cookie } }
+    );
+    expect(friends.data.data.addFriend.friends).toContainEqual({
+      email: User2.email
+    });
+    const user = await userRepo().findOne({ id: User2.id });
+    expect(user.friends).toContain(User1.id);
+  });
 });
