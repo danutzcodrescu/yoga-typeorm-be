@@ -38,6 +38,7 @@
     "apollo-server": "^0.x.x",
     "argon2": "^0.x.x",
     "cookie-parser": "^1.x.x",
+    "dataloader": "^1.x.x",
     "date-fns": "^1.x.x",
     "env": "^0.x.x",
     "graphql-yoga": "^1.x.x",

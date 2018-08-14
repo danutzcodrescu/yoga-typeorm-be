@@ -17,6 +17,7 @@ import typeDefs from './schema/schema';
 import { auth } from './middlewares/auth.middleware';
 import { applyMiddleware } from 'graphql-middleware';
 import { makeExecutableSchema } from 'graphql-tools';
+import { userLoader } from './loaders/user.loaders';
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 const protectedSchema = applyMiddleware(schema, auth);
@@ -30,7 +31,8 @@ const server = new GraphQLServer({
     }
     return {
       response,
-      token
+      token,
+      userLoader: userLoader()
     };
   }
 });
@@ -74,4 +76,4 @@ createConnection(db)
       server.start(() => console.log('Server is running on localhost:4000'));
     }
   })
-  .catch(error => console.log(error));
+  .catch(error => console.log('test', error));

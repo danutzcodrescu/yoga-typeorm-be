@@ -1,7 +1,6 @@
 import { IResolvers } from 'graphql-tools';
 import { User as UserModel, Status } from '../entity/User';
 import { omit } from 'lodash';
-import { Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -9,6 +8,7 @@ import { userRepo } from '../helpers/userRepo';
 import { RegisterMutationArgs, LogoutMutationArgs } from 'types/schemas';
 
 import { addDays, getTime } from 'date-fns';
+import { AppContext } from 'types/utilities/utilities';
 
 const cert = fs.readFileSync(
   path.join(
@@ -20,8 +20,8 @@ const cert = fs.readFileSync(
 
 const userResolver: IResolvers = {
   User: {
-    friends: (user: UserModel) =>
-      user.friends.length > 0 ? userRepo().findFriends(user.friends) : []
+    friends: (user: UserModel, _, { userLoader }: AppContext) =>
+      user.friends.length > 0 ? userLoader.loadMany(user.friends) : []
   },
   Query: {
     users: () => userRepo().find(),
@@ -58,11 +58,7 @@ const userResolver: IResolvers = {
       return resp;
     },
 
-    login: async (
-      _,
-      __,
-      { response, user }: { response: Response; user: UserModel }
-    ) => {
+    login: async (_, __, { response, user }: AppContext) => {
       user.status = Status.active;
       let safeUser;
       try {
@@ -89,7 +85,7 @@ const userResolver: IResolvers = {
     logout: async (
       _,
       { email }: LogoutMutationArgs,
-      { response, user }: { response: Response; user: UserModel }
+      { response, user }: AppContext
     ) => {
       if (email !== user.email) {
         return new Error('no simmilar emails');
@@ -108,7 +104,7 @@ const userResolver: IResolvers = {
       return 'logged out';
     },
 
-    addFriend: async (_, { id }, { user }: { user: UserModel }) => {
+    addFriend: async (_, { id }, { user }: AppContext) => {
       try {
         Promise.all([
           userRepo().addFriend(id, user.id),
