@@ -52,7 +52,7 @@ jobs:
       - checkout
       - setup_remote_docker
       # decrypt ormconfig file
-      - run: openssl enc -aes-256-cbc -d -in ormconfig.json.enc -out ormconfig.json -k $FILE_PASS
+      #   - run: openssl enc -aes-256-cbc -d -in ormconfig.json.enc -out ormconfig.json -k $FILE_PASS
       # decrypt keys for jwtt
       - run: openssl enc -aes-256-cbc -d -in ./certs/private.prod.key.enc -out ./certs/private.prod.key -k $FILE_PASS | openssl enc -aes-256-cbc -d -in ./certs/public.prod.key.enc -out ./certs/public.prod.key -k $FILE_PASS
         # Download and cache dependencies
