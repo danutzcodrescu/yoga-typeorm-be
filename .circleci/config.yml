@@ -13,7 +13,7 @@ jobs:
           POSTGRES_USER: admin
           POSTGRES_PASSWORD: test123
           POSTGRES_DB: users-test
-      
+
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -27,9 +27,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
 
       - run: yarn install
 
@@ -37,17 +37,17 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      
+
       # decrypt ormconfig file
-      - run: openssl enc -aes-256-cbc -d -in ormconfig.json.enc -out ormconfig.json -k $FILE_PASS
+      #   - run: openssl enc -aes-256-cbc -d -in ormconfig.json.enc -out ormconfig.json -k $FILE_PASS
       # run tests!
-      - run: 
+      - run:
           name: Run tests
           command: yarn test-cli
-   
+
   deploy:
     docker:
-      - image: danutzcodrescu/circle-ci-docker:v2.1 
+      - image: danutzcodrescu/circle-ci-docker:v2.1
     steps:
       - checkout
       - setup_remote_docker
@@ -55,14 +55,14 @@ jobs:
       - run: openssl enc -aes-256-cbc -d -in ormconfig.json.enc -out ormconfig.json -k $FILE_PASS
       # decrypt keys for jwtt
       - run: openssl enc -aes-256-cbc -d -in ./certs/private.prod.key.enc -out ./certs/private.prod.key -k $FILE_PASS | openssl enc -aes-256-cbc -d -in ./certs/public.prod.key.enc -out ./certs/public.prod.key -k $FILE_PASS
-       # Download and cache dependencies
+        # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
       - run:
-          name: Install dependencies 
+          name: Install dependencies
           command: npm install
       - save_cache:
           paths:
@@ -70,7 +70,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
       - run:
           name: Build
-          command: npm run build   
+          command: npm run build
       - restore_cache:
           keys:
             - v1-{{ .Branch }}
