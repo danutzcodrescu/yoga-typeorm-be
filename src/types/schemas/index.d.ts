@@ -12,12 +12,14 @@ export interface User {
   status?: string | null;
   createdAt?: string | null;
   updatedAt?: string | null;
+  friends?: (User | null)[] | null;
 }
 
 export interface Mutation {
   register?: User | null;
   login?: User | null;
   logout?: string | null;
+  addFriend?: User | null;
 }
 export interface UserQueryArgs {
   email?: string | null;
@@ -34,4 +36,7 @@ export interface LoginMutationArgs {
 }
 export interface LogoutMutationArgs {
   email: string;
+}
+export interface AddFriendMutationArgs {
+  id: string;
 }

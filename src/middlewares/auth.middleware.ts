@@ -58,7 +58,7 @@ export const logInMiddleware = async (
   return resolver(parent, args, ctx, info);
 };
 
-export const auth = {
+export const auth: any = {
   Query: {
     user: logedInMiddleware
   },

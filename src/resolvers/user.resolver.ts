@@ -5,7 +5,12 @@ import * as jwt from 'jsonwebtoken';
 import * as fs from 'fs';
 import * as path from 'path';
 import { userRepo } from '../helpers/userRepo';
-import { RegisterMutationArgs, LogoutMutationArgs } from 'types/schemas';
+import {
+  RegisterMutationArgs,
+  LogoutMutationArgs,
+  AddFriendMutationArgs,
+  UserQueryArgs
+} from 'types/schemas';
 
 import { addDays, getTime } from 'date-fns';
 import { AppContext } from 'types/utilities/utilities';
@@ -25,7 +30,7 @@ const userResolver: IResolvers = {
   },
   Query: {
     users: () => userRepo().find(),
-    user: (_, { email, username }) => {
+    user: (_, { email, username }: UserQueryArgs) => {
       return userRepo()
         .createQueryBuilder('user')
         .where('user.email = :email OR user.username = :username', {
@@ -104,7 +109,11 @@ const userResolver: IResolvers = {
       return 'logged out';
     },
 
-    addFriend: async (_, { id }, { user }: AppContext) => {
+    addFriend: async (
+      _,
+      { id }: AddFriendMutationArgs,
+      { user }: AppContext
+    ) => {
       if (!user.friends.includes(id)) {
         try {
           await Promise.all([
