@@ -1,8 +1,14 @@
+enum Status {
+  active
+  loggedOut
+  away
+}
+
 type User {
   id: String
   username: String
   email: String
-  status: String
+  status: Status
   createdAt: String
   updatedAt: String
   friends: [User]

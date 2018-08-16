@@ -11,7 +11,7 @@ import * as argon from 'argon2';
 
 export enum Status {
   active = 'active',
-  inactive = 'logged out',
+  inactive = 'loggedOut',
   away = 'away'
 }
 
@@ -28,8 +28,8 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: ['active', 'logged out', 'away'],
-    default: 'logged out'
+    enum: ['active', 'loggedOut', 'away'],
+    default: 'loggedOut'
   })
   status: Status;
 
