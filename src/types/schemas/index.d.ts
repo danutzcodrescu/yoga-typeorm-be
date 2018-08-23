@@ -27,8 +27,8 @@ export interface Subscription {
 }
 
 export interface StatusChange {
-  userId?: string | null;
-  status?: string | null;
+  userId: string;
+  status: string;
 }
 export interface UserQueryArgs {
   email?: string | null;
@@ -48,4 +48,7 @@ export interface LogoutMutationArgs {
 }
 export interface AddFriendMutationArgs {
   id: string;
+}
+export interface StatusSubscriptionArgs {
+  friends: string[];
 }

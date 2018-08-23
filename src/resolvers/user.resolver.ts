@@ -10,11 +10,13 @@ import {
   LogoutMutationArgs,
   AddFriendMutationArgs,
   UserQueryArgs,
-  StatusChange
+  StatusChange,
+  StatusSubscriptionArgs
 } from 'types/schemas';
 
 import { addDays, getTime } from 'date-fns';
 import { AppContext } from 'types/utilities';
+import { withFilter } from 'graphql-yoga';
 
 const STATUS = 'STATUS';
 
@@ -146,8 +148,15 @@ const userResolver: IResolvers = {
   Subscription: {
     status: {
       // Additional event labels can be passed to asyncIterator creation
-      subscribe: (_, __, { pubsub }: AppContext) =>
-        pubsub.asyncIterator([STATUS])
+      subscribe: withFilter(
+        (_, __, { pubsub }: AppContext) => pubsub.asyncIterator([STATUS]),
+        (
+          payload: { status: StatusChange },
+          variables: StatusSubscriptionArgs
+        ) => {
+          return variables.friends.includes(payload.status.userId);
+        }
+      )
     }
   }
 };

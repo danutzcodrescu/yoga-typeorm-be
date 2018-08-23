@@ -9,8 +9,8 @@ type User {
 }
 
 type StatusChange {
-  userId: String
-  status: String
+  userId: String!
+  status: String!
 }
 
 type Query {
@@ -26,5 +26,5 @@ type Mutation {
 }
 
 type Subscription {
-  status: StatusChange
+  status(friends: [String!]!): StatusChange
 }
