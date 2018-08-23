@@ -20,7 +20,7 @@ import { makeExecutableSchema } from 'graphql-tools';
 import { userLoader } from './loaders/user.loaders';
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
-const protectedSchema = applyMiddleware(schema, auth);
+const protectedSchema: any = applyMiddleware(schema, auth);
 
 const server = new GraphQLServer({
   schema: protectedSchema,

@@ -1,7 +1,23 @@
 {
   "name": "users-typeorm-be",
+  "author": "Danut Codrescu",
   "version": "0.0.1",
-  "description": "Awesome project developed with TypeORM.",
+  "description": "Apollo Graphql Yoga backend using Typeorm",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danutzcodrescu/yoga-typeorm-be"
+  },
+  "keywords": [
+    "graphql",
+    "apollo",
+    "graphql-yoga",
+    "typeorm",
+    "typescript",
+    "graphql-middleware",
+    "data-loader",
+    "postgres"
+  ],
   "devDependencies": {
     "@types/faker": "^4.x.x",
     "@types/jest": "^23.x.x",
