@@ -6,14 +6,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { userRepo } from '../helpers/userRepo';
 import {
-  RegisterMutationArgs,
   LogoutMutationArgs,
   AddFriendMutationArgs,
   UserQueryArgs
 } from 'types/schemas';
 
 import { addDays, getTime } from 'date-fns';
-import { AppContext } from 'types/utilities/utilities';
+import { AppContext } from '../types/utilities';
 
 const cert = fs.readFileSync(
   path.join(
@@ -42,10 +41,7 @@ const userResolver: IResolvers = {
   },
 
   Mutation: {
-    register: async (
-      _,
-      { email, username, password }: RegisterMutationArgs
-    ) => {
+    register: async (_, { input: { email, username, password } }: any) => {
       const user = new UserModel();
       user.email = email;
       user.password = password;
@@ -90,7 +86,7 @@ const userResolver: IResolvers = {
     logout: async (
       _,
       { email }: LogoutMutationArgs,
-      { response, user }: AppContext
+      { response, user }: any
     ) => {
       if (email !== user.email) {
         return new Error('no simmilar emails');

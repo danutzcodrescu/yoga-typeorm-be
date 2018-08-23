@@ -15,6 +15,7 @@
     "typeorm",
     "typescript",
     "graphql-middleware",
+    "data-loader",
     "postgres"
   ],
   "devDependencies": {
@@ -40,8 +41,8 @@
     "prettier": "^1.x.x",
     "rimraf": "^2.x.x",
     "start-server-and-test": "^1.x.x",
-    "ts-jest": "^22.x.x",
-    "ts-node": "6.x.x",
+    "ts-jest": "^23.x.x",
+    "ts-node": "7.x.x",
     "tslint": "^5.x.x",
     "tslint-config-prettier": "^1.x.x",
     "typescript": "3.x.x"
@@ -56,6 +57,7 @@
     "dataloader": "^1.x.x",
     "date-fns": "^1.x.x",
     "env": "^0.x.x",
+    "graphql-constraint-directive": "^1.1.0",
     "graphql-yoga": "^1.x.x",
     "jsonwebtoken": "^8.x.x",
     "lodash": "^4.x.x",

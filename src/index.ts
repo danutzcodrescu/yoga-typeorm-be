@@ -14,13 +14,19 @@ if (process.env.NODE_ENV !== 'production') require('dotenv').config();
 
 import resolvers from './resolvers/index.resolvers';
 import typeDefs from './schema/schema';
+import scalars from './scalars/index.scalars';
 import { auth } from './middlewares/auth.middleware';
 import { applyMiddleware } from 'graphql-middleware';
-import { makeExecutableSchema } from 'graphql-tools';
+import { makeExecutableSchema, mergeSchemas } from 'graphql-tools';
 import { userLoader } from './loaders/user.loaders';
+import { ValidationDirective } from './directives/validation.directive';
 
-const schema = makeExecutableSchema({ typeDefs, resolvers });
-const protectedSchema = applyMiddleware(schema, auth);
+const schema = makeExecutableSchema({
+  typeDefs,
+  resolvers,
+  schemaDirectives: { validation: ValidationDirective }
+});
+const protectedSchema: any = applyMiddleware(schema, auth);
 
 const server = new GraphQLServer({
   schema: protectedSchema,

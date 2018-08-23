@@ -4,6 +4,14 @@ enum Status {
   away
 }
 
+scalar ValidationString
+
+input RegisterUserInput {
+  email: String!
+  username: String! @validation(min: 5)
+  password: String!
+}
+
 type User {
   id: String
   username: String
@@ -20,7 +28,7 @@ type Query {
 }
 
 type Mutation {
-  register(email: String!, username: String!, password: String!): User
+  register(input: RegisterUserInput!): User
   login(email: String!, password: String!): User
   logout(email: String!): String
   addFriend(id: String!): User
