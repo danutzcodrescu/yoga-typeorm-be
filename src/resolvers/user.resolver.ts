@@ -9,11 +9,14 @@ import {
   RegisterMutationArgs,
   LogoutMutationArgs,
   AddFriendMutationArgs,
-  UserQueryArgs
+  UserQueryArgs,
+  StatusChange
 } from 'types/schemas';
 
 import { addDays, getTime } from 'date-fns';
-import { AppContext } from 'types/utilities/utilities';
+import { AppContext } from 'types/utilities';
+
+const STATUS = 'STATUS';
 
 const cert = fs.readFileSync(
   path.join(
@@ -63,7 +66,7 @@ const userResolver: IResolvers = {
       return resp;
     },
 
-    login: async (_, __, { response, user }: AppContext) => {
+    login: async (_, __, { response, user, pubsub }: AppContext) => {
       user.status = Status.active;
       let safeUser;
       try {
@@ -84,13 +87,19 @@ const userResolver: IResolvers = {
         expires,
         maxAge: 1000 * 60 * 60 * 24
       });
+      pubsub.publish(STATUS, <{ status: StatusChange }>{
+        status: {
+          userId: user.id,
+          status: Status.active
+        }
+      });
       return safeUser;
     },
 
     logout: async (
       _,
       { email }: LogoutMutationArgs,
-      { response, user }: AppContext
+      { response, user, pubsub }: AppContext
     ) => {
       if (email !== user.email) {
         return new Error('no simmilar emails');
@@ -106,6 +115,12 @@ const userResolver: IResolvers = {
         return new Error('log off failed');
       }
       response.clearCookie('access_token');
+      pubsub.publish(STATUS, <{ status: StatusChange }>{
+        status: {
+          userId: user.id,
+          status: Status.inactive
+        }
+      });
       return 'logged out';
     },
 
@@ -125,6 +140,14 @@ const userResolver: IResolvers = {
         }
       }
       return userRepo().findOne({ id: user.id });
+    }
+  },
+
+  Subscription: {
+    status: {
+      // Additional event labels can be passed to asyncIterator creation
+      subscribe: (_, __, { pubsub }: AppContext) =>
+        pubsub.asyncIterator([STATUS])
     }
   }
 };
