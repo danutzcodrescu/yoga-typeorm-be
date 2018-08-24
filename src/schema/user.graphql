@@ -8,6 +8,11 @@ type User {
   friends: [User]
 }
 
+type StatusChange {
+  userId: String!
+  status: String!
+}
+
 type Query {
   users: [User]
   user(email: String, username: String): User
@@ -18,4 +23,8 @@ type Mutation {
   login(email: String!, password: String!): User
   logout(email: String!): String
   addFriend(id: String!): User
+}
+
+type Subscription {
+  status(friends: [String!]!): StatusChange
 }

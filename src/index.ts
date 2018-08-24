@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { createConnection } from 'typeorm';
 // import { User } from "./entity/User";
 
-import { GraphQLServer } from 'graphql-yoga';
+import { GraphQLServer, PubSub } from 'graphql-yoga';
 import { ApolloEngine } from 'apollo-engine';
 // tslint:disable-next-line
 import * as cookieParser from 'cookie-parser';
@@ -19,6 +19,8 @@ import { applyMiddleware } from 'graphql-middleware';
 import { makeExecutableSchema } from 'graphql-tools';
 import { userLoader } from './loaders/user.loaders';
 
+const pubsub = new PubSub();
+
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 const protectedSchema: any = applyMiddleware(schema, auth);
 
@@ -26,13 +28,17 @@ const server = new GraphQLServer({
   schema: protectedSchema,
   context: ({ request, response }) => {
     let token;
+    if (isNil(request)) {
+      return { userLoader: userLoader(), pubsub };
+    }
     if (!isNil(request.cookies.access_token)) {
       token = request.cookies.access_token;
     }
     return {
       response,
       token,
-      userLoader: userLoader()
+      userLoader: userLoader(),
+      pubsub
     };
   }
 });

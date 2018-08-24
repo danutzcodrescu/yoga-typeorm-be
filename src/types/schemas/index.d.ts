@@ -21,6 +21,15 @@ export interface Mutation {
   logout?: string | null;
   addFriend?: User | null;
 }
+
+export interface Subscription {
+  status?: StatusChange | null;
+}
+
+export interface StatusChange {
+  userId: string;
+  status: string;
+}
 export interface UserQueryArgs {
   email?: string | null;
   username?: string | null;
@@ -39,4 +48,7 @@ export interface LogoutMutationArgs {
 }
 export interface AddFriendMutationArgs {
   id: string;
+}
+export interface StatusSubscriptionArgs {
+  friends: string[];
 }
