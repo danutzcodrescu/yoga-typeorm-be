@@ -4,10 +4,13 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  BeforeInsert
+  BeforeInsert,
+  ManyToMany,
+  JoinTable
 } from 'typeorm';
 
 import * as argon from 'argon2';
+import { Conversation } from './Conversation';
 
 export enum Status {
   active = 'active',
@@ -17,11 +20,14 @@ export enum Status {
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn('uuid') id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column() username: string;
+  @Column()
+  username: string;
 
-  @Column() password: string;
+  @Column()
+  password: string;
 
   @Column({ unique: true })
   email: string;
@@ -41,6 +47,10 @@ export class User {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
+
+  @ManyToMany(type => Conversation, conversation => conversation.users)
+  @JoinTable()
+  conversations: Conversation[];
 
   @BeforeInsert()
   async beforeInsert() {

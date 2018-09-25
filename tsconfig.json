@@ -21,7 +21,8 @@
     "paths": {
       "schemas/*": ["types/schemas/*"],
       "helpers/*": ["helpers/*"],
-      "controllers/*": ["controllers/*"]
+      "controllers/*": ["controllers/*"],
+      "entity/*": ["entity/*"]
     },
     "typeRoots": ["./node_modules/@types", "./src/types"]
   },

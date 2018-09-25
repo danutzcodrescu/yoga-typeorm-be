@@ -4,7 +4,7 @@ import {
   LogoutMutationArgs,
   AddFriendMutationArgs
 } from 'schemas/index';
-import { userRepo } from '../helpers/userRepo';
+import { userRepo, UserRepository, connectionName } from '../helpers/userRepo';
 import { AppContext } from '../types/utilities';
 import { omit } from 'lodash';
 import { addDays, getTime } from 'date-fns';
@@ -14,6 +14,8 @@ import * as jwt from 'jsonwebtoken';
 import * as fs from 'fs';
 import * as path from 'path';
 import { IResolvers } from 'graphql-tools';
+import { getConnection } from 'typeorm';
+import { Conversation } from '../entity/Conversation';
 
 const cert = fs.readFileSync(
   path.join(
@@ -107,14 +109,25 @@ export const UserMutation: IResolvers = {
       { user }: AppContext
     ) => {
       if (!user.friends.includes(id)) {
-        try {
-          await Promise.all([
-            userRepo().addFriend(id, user.id),
-            userRepo().addFriend(user.id, id)
-          ]);
-        } catch (e) {
-          console.log(e);
-        }
+        await getConnection(connectionName).transaction(
+          async transactionalEntityManager => {
+            // TODO: try to use a single query instead of 2 to append friends
+            await Promise.all([
+              transactionalEntityManager
+                .getCustomRepository(UserRepository)
+                .addFriend(id, user.id),
+              transactionalEntityManager
+                .getCustomRepository(UserRepository)
+                .addFriend(user.id, id)
+            ]);
+            const conversation = new Conversation();
+            conversation.users = [user.id, id];
+
+            await transactionalEntityManager
+              .getRepository(Conversation)
+              .save(conversation);
+          }
+        );
       }
       return userRepo().findOne({ id: user.id });
     }

@@ -1,5 +1,5 @@
-import * as faker from 'faker';
 import axios from 'axios';
+import { TestGenerator } from './mocking/test.generator';
 
 const instance = axios.create({
   baseURL: 'http://localhost:4000',
@@ -11,10 +11,7 @@ let cookie: string;
 describe('user logic flow', () => {
   let variables: any;
   beforeAll(() => {
-    variables = {
-      email: faker.internet.email(),
-      username: faker.internet.userName()
-    };
+    variables = TestGenerator.generateUserVariables();
   });
   it('should register user', async done => {
     const registerMutation = `

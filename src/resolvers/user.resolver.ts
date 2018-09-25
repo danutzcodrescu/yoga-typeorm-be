@@ -7,11 +7,20 @@ import { withFilter } from 'graphql-yoga';
 import { STATUS } from '../globals/constants';
 import { UserQuery } from './user.query';
 import { UserMutation } from './user.mutation';
+import { getRepository } from 'typeorm';
+import { Conversation } from '../entity/Conversation';
+import { connectionName } from '../helpers/userRepo';
 
 const resolver: IResolvers = {
   User: {
     friends: (user: UserModel, _, { userLoader }: AppContext) =>
-      user.friends.length > 0 ? userLoader.loadMany(user.friends) : []
+      user.friends.length > 0 ? userLoader.loadMany(user.friends) : [],
+    conversation: async (user: UserModel, _, __) => {
+      return getRepository(Conversation, connectionName).query(
+        'SELECT id from "conversation" WHERE $1 = ANY(users);',
+        [user.id]
+      );
+    }
   },
 
   Subscription: {

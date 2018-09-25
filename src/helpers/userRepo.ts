@@ -2,14 +2,14 @@ import { EntityRepository, Repository, getCustomRepository } from 'typeorm';
 import { User } from '../entity/User';
 
 export const userRepo = () =>
-  getCustomRepository(
-    UserRepository,
-    process.env.NODE_ENV === 'test'
-      ? 'test'
-      : process.env.NODE_ENV === 'production'
-        ? 'production'
-        : 'default'
-  );
+  getCustomRepository(UserRepository, connectionName);
+
+export const connectionName =
+  process.env.NODE_ENV === 'test'
+    ? 'test'
+    : process.env.NODE_ENV === 'production'
+      ? 'production'
+      : 'default';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {

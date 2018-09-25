@@ -34,7 +34,7 @@
     "graphql": "^0.x.x",
     "graphql-code-generator": "^0.x.x",
     "graphql-codegen-typescript-template": "^0.x.x",
-    "husky": "^1.0.0-rc.9",
+    "husky": "^1.0.0-rc.13",
     "jest": "^23.x.x",
     "node-fetch": "^2.x.x",
     "nodemon": "^1.x.x",
@@ -87,7 +87,9 @@
     "transform": {
       "^.+\\.ts?$": "ts-jest"
     },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(ts)$",
+    "testMatch": [
+      "**/__tests__/*.+(spec.ts)"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",

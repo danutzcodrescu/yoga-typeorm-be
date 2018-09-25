@@ -1,8 +1,10 @@
-import * as faker from 'faker';
 import axios from 'axios';
 import { createConnection } from 'typeorm';
 import { userRepo } from '../helpers/userRepo';
+import { conversationRepo } from '../helpers/conversationRepo';
 import { User } from '../entity/User';
+import { Conversation } from '../entity/Conversation';
+import { TestGenerator } from './mocking/test.generator';
 
 const instance = axios.create({
   baseURL: 'http://localhost:4000',
@@ -13,29 +15,22 @@ let cookie: string;
 
 describe('add friends', () => {
   const variables = {
-    user1: {
-      email: faker.internet.email(),
-      username: faker.internet.userName()
-    },
-    user2: {
-      email: faker.internet.email(),
-      username: faker.internet.userName()
-    }
+    user1: TestGenerator.generateUserVariables(),
+    user2: TestGenerator.generateUserVariables()
   };
   let User1: User;
   let User2: User;
   beforeAll(async () => {
     await createConnection('test');
 
-    const user1 = new User();
-    user1.email = variables.user1.email;
-    user1.username = variables.user1.username;
-    user1.password = 'test';
-
-    const user2 = new User();
-    user2.email = variables.user2.email;
-    user2.username = variables.user2.username;
-    user2.password = 'test';
+    const user1 = TestGenerator.newUser(
+      variables.user1.email,
+      variables.user1.username
+    );
+    const user2 = TestGenerator.newUser(
+      variables.user2.email,
+      variables.user2.username
+    );
 
     [User1, User2] = await Promise.all([
       userRepo().save(user1),
@@ -62,11 +57,11 @@ describe('add friends', () => {
 
   it('should add a friend', async () => {
     const addFriendMutation = `
-      mutation($id: String!) {
+      mutation($id: ID!) {
         addFriend(id: $id) {
-           friends {
-             email
-           }
+          friends {
+            email
+          }
         }
       }`;
 
@@ -80,16 +75,23 @@ describe('add friends', () => {
       },
       { headers: { Cookie: cookie } }
     );
+
     expect(friends.data.data.addFriend.friends).toContainEqual({
       email: User2.email
     });
     const user = await userRepo().findOne({ id: User2.id });
     expect(user.friends).toContain(User1.id);
+    const conversation: Conversation = await conversationRepo()
+      .createQueryBuilder('conversation')
+      .where(':id = ANY(users)', { id: User1.id })
+      .getOne();
+    expect(conversation.users).toContain(User1.id);
+    expect(conversation.users).toContain(User2.id);
   });
 
-  it('should not existing friend', async () => {
+  it('should not add existing friend', async () => {
     const addFriendMutation = `
-      mutation($id: String!) {
+      mutation($id: ID!) {
         addFriend(id: $id) {
            friends {
              email

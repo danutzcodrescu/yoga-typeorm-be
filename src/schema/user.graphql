@@ -1,5 +1,5 @@
 type User {
-  id: String
+  id: ID
   username: String
   email: String
   status: String
@@ -9,7 +9,7 @@ type User {
 }
 
 type StatusChange {
-  userId: String!
+  userId: ID!
   status: String!
 }
 
@@ -22,9 +22,13 @@ type Mutation {
   register(email: String!, username: String!, password: String!): User
   login(email: String!, password: String!): User
   logout(email: String!): String
-  addFriend(id: String!): User
+  addFriend(id: ID!): User
 }
 
 type Subscription {
   status(friends: [String!]!): StatusChange
+}
+
+extend type User {
+  conversation: [Conversation]
 }
