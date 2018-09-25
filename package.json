@@ -73,7 +73,7 @@
     "start-prod": "node ./src/index",
     "start-test": "NODE_ENV=test nodemon --exec ts-node src/index.ts",
     "schema-types": "gql-gen --schema http://localhost:4000 --template graphql-codegen-typescript-template --out ./src/types/schemas/index.d.ts \"./src/**/*.graphql\"",
-    "test": "NODE_ENV=test jest -i --coverage",
+    "test": "NODE_ENV=test jest -i --coverage --detectOpenHandles",
     "test-watch": "NODE_ENV=test jest --watchAll -i",
     "lint": "tslint -p .",
     "lint-fix": "tslint -p . --fix",

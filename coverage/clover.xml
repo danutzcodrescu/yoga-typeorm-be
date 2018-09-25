@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1537909317478" clover="3.2.0">
+  <project timestamp="1537909317478" name="All files">
+    <metrics statements="50" coveredstatements="48" conditionals="12" coveredconditionals="7" methods="10" coveredmethods="8" elements="72" coveredelements="63" complexity="0" loc="50" ncloc="50" packages="3" files="6" classes="6">
+      <package name="__tests__.mocking">
+        <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <file name="test.generator.ts" path="/home/wildman2bad/Desktop/typorm-be/src/__tests__/mocking/test.generator.ts">
+          <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+          <line num="1" count="2" type="stmt"/>
+          <line num="2" count="2" type="stmt"/>
+          <line num="4" count="2" type="stmt"/>
+          <line num="6" count="2" type="stmt"/>
+          <line num="7" count="2" type="stmt"/>
+          <line num="8" count="2" type="stmt"/>
+          <line num="9" count="2" type="stmt"/>
+          <line num="10" count="2" type="stmt"/>
+          <line num="14" count="3" type="stmt"/>
+        </file>
+      </package>
+      <package name="entity">
+        <metrics statements="28" coveredstatements="28" conditionals="8" coveredconditionals="6" methods="4" coveredmethods="4"/>
+        <file name="Conversation.ts" path="/home/wildman2bad/Desktop/typorm-be/src/entity/Conversation.ts">
+          <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+          <line num="1" count="2" type="stmt"/>
+          <line num="4" count="2" type="stmt"/>
+          <line num="6" count="2" type="stmt"/>
+          <line num="10" count="2" type="stmt"/>
+        </file>
+        <file name="Message.ts" path="/home/wildman2bad/Desktop/typorm-be/src/entity/Message.ts">
+          <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+          <line num="1" count="1" type="stmt"/>
+          <line num="4" count="1" type="stmt"/>
+          <line num="6" count="1" type="stmt"/>
+        </file>
+        <file name="User.ts" path="/home/wildman2bad/Desktop/typorm-be/src/entity/User.ts">
+          <metrics statements="21" coveredstatements="21" conditionals="8" coveredconditionals="6" methods="4" coveredmethods="4"/>
+          <line num="1" count="2" type="stmt"/>
+          <line num="12" count="2" type="stmt"/>
+          <line num="13" count="2" type="stmt"/>
+          <line num="15" count="2" type="cond" truecount="2" falsecount="0"/>
+          <line num="16" count="2" type="stmt"/>
+          <line num="17" count="2" type="stmt"/>
+          <line num="18" count="2" type="stmt"/>
+          <line num="22" count="2" type="stmt"/>
+          <line num="24" count="2" type="stmt"/>
+          <line num="27" count="2" type="stmt"/>
+          <line num="30" count="2" type="stmt"/>
+          <line num="33" count="2" type="stmt"/>
+          <line num="40" count="2" type="stmt"/>
+          <line num="43" count="2" type="stmt"/>
+          <line num="46" count="2" type="cond" truecount="2" falsecount="1"/>
+          <line num="49" count="2" type="cond" truecount="2" falsecount="1"/>
+          <line num="51" count="1" type="stmt"/>
+          <line num="53" count="2" type="stmt"/>
+          <line num="56" count="2" type="stmt"/>
+          <line num="57" count="2" type="stmt"/>
+          <line num="58" count="2" type="stmt"/>
+        </file>
+      </package>
+      <package name="helpers">
+        <metrics statements="13" coveredstatements="11" conditionals="4" coveredconditionals="1" methods="4" coveredmethods="2"/>
+        <file name="conversationRepo.ts" path="/home/wildman2bad/Desktop/typorm-be/src/helpers/conversationRepo.ts">
+          <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+          <line num="1" count="1" type="stmt"/>
+          <line num="2" count="1" type="stmt"/>
+          <line num="3" count="1" type="stmt"/>
+          <line num="5" count="1" type="stmt"/>
+          <line num="6" count="1" type="stmt"/>
+        </file>
+        <file name="userRepo.ts" path="/home/wildman2bad/Desktop/typorm-be/src/helpers/userRepo.ts">
+          <metrics statements="8" coveredstatements="6" conditionals="4" coveredconditionals="1" methods="3" coveredmethods="1"/>
+          <line num="1" count="1" type="stmt"/>
+          <line num="2" count="1" type="stmt"/>
+          <line num="4" count="1" type="stmt"/>
+          <line num="5" count="4" type="stmt"/>
+          <line num="7" count="1" type="stmt"/>
+          <line num="15" count="1" type="stmt"/>
+          <line num="17" count="0" type="stmt"/>
+          <line num="23" count="0" type="stmt"/>
+        </file>
+      </package>
+    </metrics>
+  </project>
+</coverage>
