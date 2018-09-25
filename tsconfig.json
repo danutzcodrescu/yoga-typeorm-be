@@ -1,15 +1,30 @@
 {
   "compilerOptions": {
-    "lib": ["es5", "es6", "es2017"],
+    "lib": ["es5", "es6", "es2017", "esnext.asynciterable"],
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "./build",
+    "rootDir": "src",
+    "outDir": "./dist",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
     "noImplicitAny": true,
+    "declaration": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "stripInternal": true,
+    "pretty": true,
+    "strictNullChecks": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
-  }
+    "baseUrl": "src",
+    "paths": {
+      "schemas/*": ["types/schemas/*"],
+      "helpers/*": ["helpers/*"],
+      "controllers/*": ["controllers/*"],
+      "entity/*": ["entity/*"]
+    },
+    "typeRoots": ["./node_modules/@types", "./src/types"]
+  },
+  "exclude": ["./node_modules", "**/*.spec.ts", "./seeddb.ts"]
 }

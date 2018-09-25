@@ -4,6 +4,6 @@ node_modules/
 build/
 tmp/
 temp/
-ormconfig.json
 .env
 certs/*.prod.key
+dist/

@@ -8,7 +8,12 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/node:8.11
-      
+      - image: circleci/postgres:10.4
+        environment:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: test123
+          POSTGRES_DB: users-test
+
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -22,9 +27,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
 
       - run: yarn install
 
@@ -32,16 +37,78 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      
+
       # decrypt ormconfig file
-      - run: openssl enc -aes-256-cbc -d -in ormconfig.json.enc -out ormconfig.json -k $FILE_PASS
+      #   - run: openssl enc -aes-256-cbc -d -in ormconfig.json.enc -out ormconfig.json -k $FILE_PASS
       # run tests!
-      - run: 
-          name: Run server
-          command: yarn start-test
-          background: true
-
-      - run: 
+      - run:
           name: Run tests
-          command: sleep 5 && yarn test
+          command: yarn test-cli
 
+  deploy:
+    docker:
+      - image: danutzcodrescu/circle-ci-docker:v2.1
+    steps:
+      - checkout
+      - setup_remote_docker
+      # decrypt ormconfig file
+      #   - run: openssl enc -aes-256-cbc -d -in ormconfig.json.enc -out ormconfig.json -k $FILE_PASS
+      # decrypt keys for jwtt
+      - run: openssl enc -aes-256-cbc -d -in ./certs/private.prod.key.enc -out ./certs/private.prod.key -k $FILE_PASS | openssl enc -aes-256-cbc -d -in ./certs/public.prod.key.enc -out ./certs/public.prod.key -k $FILE_PASS
+        # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run:
+          name: Install dependencies
+          command: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Build
+          command: npm run build
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /caches/app.tar
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/app.tar | true
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build --cache-from=app -t app .
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/app.tar app
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /caches/app.tar
+      - deploy:
+          name: Push application Docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              login="$(aws ecr get-login --no-include-email --region us-east-2)"
+              ${login}
+              docker tag app "${ECR_ENDPOINT}/${ECR_REPO}:${CIRCLE_SHA1}"
+              docker push "${ECR_ENDPOINT}/${ECR_REPO}:${CIRCLE_SHA1}"
+            fi      
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build

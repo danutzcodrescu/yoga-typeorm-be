@@ -9,6 +9,10 @@
     "member-access": false,
     "interface-name": false,
     "quotemark": [true, "single"],
-    "no-shadowed-variable": false
+    "no-shadowed-variable": false,
+    "no-submodule-imports": false,
+    "no-object-literal-type-assertion": false,
+    "no-angle-bracket-type-assertion": false,
+    "prefer-object-spread": false
   }
 }

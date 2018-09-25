@@ -2,78 +2,84 @@ import 'reflect-metadata';
 import { createConnection } from 'typeorm';
 // import { User } from "./entity/User";
 
-import { GraphQLServer } from 'graphql-yoga';
+import { GraphQLServer, PubSub } from 'graphql-yoga';
 import { ApolloEngine } from 'apollo-engine';
 // tslint:disable-next-line
-import * as cookieParser from "cookie-parser";
+import * as cookieParser from 'cookie-parser';
 import { isNil } from 'lodash';
+import * as morgan from 'morgan';
 
 // tslint:disable-next-line
-require("dotenv").config();
+if (process.env.NODE_ENV !== 'production') require('dotenv').config();
 
 import resolvers from './resolvers/index.resolvers';
 import typeDefs from './schema/schema';
+import { auth } from './middlewares/auth.middleware';
+import { applyMiddleware } from 'graphql-middleware';
+import { makeExecutableSchema } from 'graphql-tools';
+import { userLoader } from './loaders/user.loaders';
+
+const pubsub = new PubSub();
+
+const schema = makeExecutableSchema({ typeDefs, resolvers });
+const protectedSchema: any = applyMiddleware(schema, auth);
 
 const server = new GraphQLServer({
-  typeDefs,
-  resolvers,
+  schema: protectedSchema,
   context: ({ request, response }) => {
     let token;
+    if (isNil(request)) {
+      return { userLoader: userLoader(), pubsub };
+    }
     if (!isNil(request.cookies.access_token)) {
       token = request.cookies.access_token;
     }
     return {
       response,
-      token
+      token,
+      userLoader: userLoader(),
+      pubsub
     };
   }
 });
 
+server.express.use(morgan('dev'));
 server.express.use(cookieParser());
 
-if (process.env.ENGINE === 'true') {
-  const engine = new ApolloEngine({
-    apiKey: process.env.APOLLO_ENGINE_KEY
-  });
+const db =
+  process.env.NODE_ENV === 'test'
+    ? 'test'
+    : process.env.NODE_ENV === 'production'
+      ? 'production'
+      : 'default';
 
-  const httpServer = server.createHttpServer({
-    tracing: true,
-    cacheControl: true
-  });
-
-  engine.listen(
-    {
-      port: 4000,
-      httpServer,
-      graphqlPaths: ['/']
-    },
-    () =>
-      console.log(
-        `Server with Apollo Engine is running on http://localhost:4000`
-      )
-  );
-} else {
-  server.start({ cors: { origin: false } }, () =>
-    console.log('Server is running on localhost:4000')
-  );
-}
-
-createConnection(process.env.NODE_ENV === 'test' ? 'test' : 'default')
+createConnection(db)
   .then(() => {
-    // console.log("Inserting a new user into the database...");
-    // const user = new User();
-
-    // user.username = "test2";
-    // user.password = "sasa";
-    // user.email = "test2@test.com";
-    // await connection.manager.save(user);
-    // console.log("Saved a new user with id: " + user.id);
-
-    // console.log("Loading users from the database...");
-    // const users = await connection.manager.find(User);
-    // console.log("Loaded users: ", users);
-
-    // console.log("Here you can setup and run express/koa/any other framework.");
     console.log('connection to db established');
+
+    if (process.env.ENGINE === 'true') {
+      const engine = new ApolloEngine({
+        apiKey: process.env.APOLLO_ENGINE_KEY
+      });
+
+      const httpServer = server.createHttpServer({
+        tracing: true,
+        cacheControl: true
+      });
+
+      engine.listen(
+        {
+          port: 4000,
+          httpServer,
+          graphqlPaths: ['/']
+        },
+        () =>
+          console.log(
+            `Server with Apollo Engine is running on http://localhost:4000`
+          )
+      );
+    } else {
+      server.start(() => console.log('Server is running on localhost:4000'));
+    }
   })
-  .catch(error => console.log(error));
+  .catch(error => console.log('test', error));
