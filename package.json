@@ -61,7 +61,7 @@
     "jsonwebtoken": "8.3.0",
     "lodash": "4.17.10",
     "merge-graphql-schemas": "1.5.3",
-    "morgan": "1.9.0",
+    "morgan": "1.9.1",
     "ms": "2.1.1",
     "path": "0.12.7",
     "pg": "7.4.3",
