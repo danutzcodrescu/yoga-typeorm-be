@@ -4,6 +4,7 @@ import { User } from '../entity/User';
 export const userRepo = () =>
   getCustomRepository(UserRepository, connectionName);
 
+/* istanbul ignore next */
 export const connectionName =
   process.env.NODE_ENV === 'test'
     ? 'test'
