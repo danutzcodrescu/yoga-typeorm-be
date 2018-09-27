@@ -7,3 +7,4 @@ temp/
 .env
 certs/*.prod.key
 dist/
+coverage
