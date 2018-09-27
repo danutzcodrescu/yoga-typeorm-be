@@ -1,9 +1,8 @@
 import axios from 'axios';
-import { createConnection } from 'typeorm';
+import { createConnection, Connection } from 'typeorm';
 import { userRepo } from '../helpers/userRepo';
 import { conversationRepo } from '../helpers/conversationRepo';
 import { User } from '../entity/User';
-import { Conversation } from '../entity/Conversation';
 import { TestGenerator } from './mocking/test.generator';
 
 const instance = axios.create({
@@ -20,8 +19,9 @@ describe('add friends', () => {
   };
   let User1: User;
   let User2: User;
+  let connection: Connection;
   beforeAll(async () => {
-    await createConnection('test');
+    connection = await createConnection('test');
 
     const user1 = TestGenerator.newUser(
       variables.user1.email,
@@ -80,13 +80,13 @@ describe('add friends', () => {
       email: User2.email
     });
     const user = await userRepo().findOne({ id: User2.id });
-    expect(user.friends).toContain(User1.id);
-    const conversation: Conversation = await conversationRepo()
+    expect((user as User).friends).toContain(User1.id);
+    const conversation = await conversationRepo()
       .createQueryBuilder('conversation')
       .where(':id = ANY(users)', { id: User1.id })
       .getOne();
-    expect(conversation.users).toContain(User1.id);
-    expect(conversation.users).toContain(User2.id);
+    expect(conversation!.users).toContain(User1.id);
+    expect(conversation!.users).toContain(User2.id);
   });
 
   it('should not add existing friend', async () => {
@@ -113,6 +113,10 @@ describe('add friends', () => {
       email: User2.email
     });
     const user = await userRepo().findOne({ id: User2.id });
-    expect(user.friends).toContain(User1.id);
+    expect(user!.friends).toContain(User1.id);
+  });
+
+  afterAll(async () => {
+    await connection.close();
   });
 });
