@@ -20,7 +20,7 @@
   ],
   "devDependencies": {
     "@types/faker": "4.1.4",
-    "@types/jest": "23.3.5",
+    "@types/jest": "23.3.9",
     "@types/jsonwebtoken": "7.2.8",
     "@types/lodash": "4.14.117",
     "@types/morgan": "1.7.35",
