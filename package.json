@@ -58,7 +58,7 @@
     "dataloader": "1.4.0",
     "date-fns": "1.29.0",
     "env": "0.0.2",
-    "graphql-yoga": "1.16.2",
+    "graphql-yoga": "1.16.7",
     "jsonwebtoken": "8.4.0",
     "lodash": "4.17.11",
     "merge-graphql-schemas": "1.5.7",
