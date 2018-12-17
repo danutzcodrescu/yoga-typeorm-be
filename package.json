@@ -33,7 +33,7 @@
     "faker": "4.1.0",
     "fetch-cookie": "0.7.2",
     "graphql": "0.13.2",
-    "graphql-code-generator": "0.12.6",
+    "graphql-code-generator": "0.15.0",
     "graphql-codegen-typescript-template": "0.12.6",
     "husky": "1.2.1",
     "jest": "23.6.0",
